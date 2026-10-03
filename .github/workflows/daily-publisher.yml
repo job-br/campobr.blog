@@ -1,0 +1,64 @@
+name: CampoBR - Piloto Automático Diário (12h00 BRT)
+
+on:
+  # Executa todos os dias às 15:00 UTC (12:00 no Horário de Brasília / BRT)
+  schedule:
+    - cron: '0 15 * * *'
+
+  # Permite disparo manual com 1 clique pela aba 'Actions' no GitHub
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Categoria para publicar (deixe "Auto" para seguir o Ciclo de 6 Dias)'
+        required: false
+        default: 'Auto'
+        type: choice
+        options:
+          - 'Auto'
+          - 'Jogadores'
+          - 'Equipe Técnica'
+          - 'Eventos'
+          - 'Clubes Serie B'
+          - 'Clubes Serie A'
+          - 'Seleção Brasileira'
+      dry_run:
+        description: 'Modo Simulação (Dry Run): Apenas testar sem gravar no Firestore'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  publish-daily-article:
+    name: Publicar Matéria Oficial das 12h00
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Baixar Código do Repositório (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm install --prefer-offline --no-audit
+
+      - name: Executar Robô Editorial Autônomo
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ github.event.inputs.category }}" != "Auto" ] && [ -n "${{ github.event.inputs.category }}" ]; then
+            ARGS="$ARGS --category=${{ github.event.inputs.category }}"
+          fi
+
+          echo "Executando: npx tsx scripts/daily-auto-publisher.ts $ARGS"
+          npx tsx scripts/daily-auto-publisher.ts $ARGS
