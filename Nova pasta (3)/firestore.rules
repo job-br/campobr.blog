@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function isValidPost(data) {
+      return data.title is string && data.title.size() >= 1 && data.title.size() <= 500
+        && data.category is string && data.category.size() <= 120
+        && data.content is string && data.content.size() <= 200000
+        && data.status in ['published', 'draft', 'scheduled']
+        && data.createdAt is string
+        && (!('summary' in data) || (data.summary is string && data.summary.size() <= 10000));
+    }
+    function isValidComment(data, postId) {
+      return data.postId == postId
+        && data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 120
+        && data.content is string && data.content.size() >= 1 && data.content.size() <= 2000
+        && data.createdAt is string;
+    }
+
+    match /posts/{postId} {
+      // Público só pode consultar posts publicados; admins podem revisar todos.
+      allow get: if isAdmin() || resource.data.status == 'published';
+      allow list: if isAdmin() || resource.data.status == 'published';
+      allow create: if isAdmin() && isValidId(postId) && isValidPost(request.resource.data);
+      allow update: if isAdmin() && isValidId(postId) && isValidPost(request.resource.data);
+      // Contadores são campos limitados e só podem aumentar em uma unidade por chamada.
+      allow update: if !isAdmin()
+        && resource.data.status == 'published'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewsCount', 'likesCount'])
+        && request.resource.data.title == resource.data.title
+        && request.resource.data.content == resource.data.content
+        && ((!request.resource.data.diff(resource.data).affectedKeys().hasAny(['viewsCount']))
+          || request.resource.data.viewsCount == resource.data.viewsCount + 1)
+        && ((!request.resource.data.diff(resource.data).affectedKeys().hasAny(['likesCount']))
+          || request.resource.data.likesCount == resource.data.likesCount + 1);
+      allow delete: if isAdmin();
+
+      match /comments/{commentId} {
+        allow get, list: if get(/databases/$(database)/documents/posts/$(postId)).data.status == 'published' || isAdmin();
+        allow create: if isValidId(commentId)
+          && get(/databases/$(database)/documents/posts/$(postId)).data.status == 'published'
+          && isValidComment(request.resource.data, postId);
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    match /settings/{settingId} {
+      allow read, write: if isAdmin();
+    }
+    match /system_state/{stateId} {
+      allow read, write: if isAdmin();
+    }
+    match /system_configs/{configId} {
+      allow read, write: if isAdmin();
+    }
+    match /test/{testId} {
+      allow get: if true;
+      allow list, create, update, delete: if isAdmin();
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
