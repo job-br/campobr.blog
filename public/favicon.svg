@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#091018" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+  </defs>
+  <!-- Background Shield -->
+  <path d="M50 5 L88 18 V55 C88 77 50 96 50 96 C50 96 12 77 12 55 V18 Z" fill="url(#bgGrad)" stroke="#10b981" stroke-width="4" />
+  <!-- Brazilian Yellow Ribbon -->
+  <path d="M18 70 Q50 24 82 45" fill="none" stroke="#eab308" stroke-width="5" stroke-linecap="round" />
+  <!-- Center Soccer Ball -->
+  <circle cx="50" cy="50" r="18" fill="#ffffff" stroke="#047857" stroke-width="3" />
+  <!-- Soccer Ball Pentagons -->
+  <polygon points="50,42 57,47 54,54 46,54 43,47" fill="#0f172a" />
+  <line x1="50" y1="42" x2="50" y2="34" stroke="#0f172a" stroke-width="2" />
+  <line x1="57" y1="47" x2="65" y2="43" stroke="#0f172a" stroke-width="2" />
+  <line x1="54" y1="54" x2="61" y2="62" stroke="#0f172a" stroke-width="2" />
+  <line x1="46" y1="54" x2="39" y2="62" stroke="#0f172a" stroke-width="2" />
+  <line x1="43" y1="47" x2="35" y2="43" stroke="#0f172a" stroke-width="2" />
+  <!-- Top Gold Star -->
+  <polygon points="50,11 52.5,17 58,17 53.5,20.5 55.5,26 50,22.5 44.5,26 46.5,20.5 42,17 47.5,17" fill="#facc15" />
+</svg>

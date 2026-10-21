@@ -1,0 +1,6 @@
+{
+  "name": "CampoBR",
+  "description": "Blog profissional e portal esportivo de futebol brasileiro com notícias, destaques, categorias completas e monetização.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
