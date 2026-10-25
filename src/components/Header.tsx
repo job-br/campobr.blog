@@ -171,25 +171,39 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Botão Oficial de Baixar Projeto ZIP */}
+          {/* Botão Oficial de Baixar Projeto ZIP - Sempre visível e destacado */}
           {onOpenDownload && (
             <button
               onClick={onOpenDownload}
-              className="p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 hover:text-white transition-all cursor-pointer ml-1 flex items-center gap-1.5 text-xs font-bold shadow-sm"
-              title="Baixar Projeto Completo (ZIP)"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-emerald-500/25 to-teal-500/20 hover:from-amber-500/35 hover:to-emerald-500/35 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 hover:text-white transition-all cursor-pointer flex items-center gap-2 text-xs font-bold shadow-lg shadow-emerald-950/60"
+              title="Baixar Projeto Completo (Código-Fonte e Build ZIP)"
               aria-label="Baixar Projeto Completo"
             >
               <Download className="w-4 h-4 text-emerald-400 animate-pulse" />
-              <span className="hidden lg:inline">Baixar Projeto</span>
+              <span>Baixar Projeto</span>
+              <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
+                ZIP
+              </span>
             </button>
           )}
         </div>
 
-        {/* Mobile menu toggle */}
+        {/* Mobile quick download & menu toggle */}
         <div className="flex md:hidden items-center gap-2">
+          {onOpenDownload && (
+            <button
+              onClick={onOpenDownload}
+              className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+              title="Baixar Projeto Completo (ZIP)"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <span>Baixar ZIP</span>
+            </button>
+          )}
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2.5 rounded-xl bg-slate-900 border border-emerald-500/20 text-slate-300 hover:text-white"
+            className="p-2.5 rounded-xl bg-slate-900 border border-emerald-500/20 text-slate-300 hover:text-white cursor-pointer"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5 text-emerald-400" /> : <Menu className="w-5 h-5 text-emerald-400" />}

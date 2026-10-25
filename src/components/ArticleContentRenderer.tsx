@@ -1,7 +1,24 @@
-import React, { useMemo } from 'react';
-import { ExternalLink, Compass, Trophy, ClipboardList, Sparkles, Camera, Eye, Zap, ShieldCheck } from 'lucide-react';
+import React, { useMemo, useEffect, useRef } from 'react';
+import { 
+  ExternalLink, 
+  Compass, 
+  Trophy, 
+  ClipboardList, 
+  Sparkles, 
+  Camera, 
+  Eye, 
+  Zap, 
+  ShieldCheck, 
+  Link2, 
+  CheckCircle2, 
+  Clock, 
+  BookOpen, 
+  HelpCircle, 
+  CheckSquare 
+} from 'lucide-react';
 import { AdSenseConfig, Post, ImageApplicationAnalysis } from '../types';
 import { generateImageApplicationForPost } from '../services/aiVisualThemeEngine';
+import { valueAnalyticsService } from '../services/valueAnalyticsService';
 import { ArticleAdSenseSlot } from './ArticleAdSenseSlot';
 
 interface ArticleContentRendererProps {
@@ -42,6 +59,42 @@ export const ArticleContentRenderer: React.FC<ArticleContentRendererProps> = ({
     }
     return null;
   }, [post]);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackedDepths = useRef<Set<number>>(new Set());
+
+  // Reading depth tracking for GA4 value analysis (25%, 50%, 75%, 100%)
+  useEffect(() => {
+    if (!post?.id) return;
+    trackedDepths.current.clear();
+
+    const handleScroll = () => {
+      if (!containerRef.current || !post?.id) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const totalHeight = rect.height;
+      if (totalHeight <= 0) return;
+
+      const scrolledPastTop = Math.max(0, -rect.top + windowHeight * 0.5);
+      const ratio = Math.min(1, Math.max(0, scrolledPastTop / totalHeight));
+
+      const thresholds = [25, 50, 75, 100] as const;
+      thresholds.forEach((depth) => {
+        if (ratio >= depth / 100 && !trackedDepths.current.has(depth)) {
+          trackedDepths.current.add(depth);
+          valueAnalyticsService.trackArticleReadDepth(post.id, depth);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once initially
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [post?.id]);
 
   const hasExplicitImageAppBlock = useMemo(() => {
     return content.includes('### 📸 Aplicação da Imagem') || 
@@ -201,7 +254,10 @@ export const ArticleContentRenderer: React.FC<ArticleContentRendererProps> = ({
     : 'leading-[1.85] my-4.5';
 
   return (
-    <div className={`space-y-4 ${paragraphColor} ${paragraphFont} ${fontSizeClass} ${isReadingMode ? 'max-w-2xl mx-auto transition-colors duration-300' : ''}`}>
+    <div 
+      ref={containerRef}
+      className={`space-y-4 ${paragraphColor} ${paragraphFont} ${fontSizeClass} ${isReadingMode ? 'max-w-2xl mx-auto transition-colors duration-300' : ''}`}
+    >
       {blocks.map((block, idx) => {
         const trimmed = block.trim();
         if (!trimmed) return null;
@@ -652,6 +708,244 @@ export const ArticleContentRenderer: React.FC<ArticleContentRendererProps> = ({
           </React.Fragment>
         );
       })}
+
+      {/* ========================================================================= */}
+      {/* SEÇÃO EDITORIAL: FAQ & DÚVIDAS FREQUENTES (Anti-alegações falsas) */}
+      {/* ========================================================================= */}
+      {post?.faqItems && post.faqItems.length > 0 && (
+        <div className="mt-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-slate-950 border border-slate-800 shadow-xl space-y-4">
+          <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              <HelpCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-display font-black text-lg text-white">
+                Perguntas Frequentes (FAQ Editorial)
+              </h3>
+              <p className="text-xs text-slate-400">
+                Respostas diretas baseadas em apuração jornalística e dados oficiais
+              </p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {post.faqItems.map((item, qIdx) => (
+              <div key={qIdx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+                <h4 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                  <span className="w-1.5 h-4 bg-emerald-400 rounded-full shrink-0"></span>
+                  {item.question}
+                </h4>
+                <p className="text-slate-300 text-sm leading-relaxed pl-3.5">
+                  {item.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SEÇÃO: CHECKLIST DE COMPRA & ESPECIFICAÇÕES VERIFICADAS */}
+      {/* ========================================================================= */}
+      {post?.purchaseChecklist && post.purchaseChecklist.length > 0 && (
+        <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-amber-950/20 via-slate-900/80 to-slate-950 border border-amber-500/30 shadow-xl space-y-4">
+          <div className="flex items-center gap-3 border-b border-amber-500/20 pb-3">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
+              <CheckSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-display font-black text-lg text-white">
+                Checklist Editorial & Recomendações
+              </h3>
+              <p className="text-xs text-amber-300/80">
+                Critérios técnicos e observações sem métricas comerciais simuladas
+              </p>
+            </div>
+          </div>
+          <ul className="space-y-2.5">
+            {post.purchaseChecklist.map((chk, cIdx) => (
+              <li key={cIdx} className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-white text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>{chk.item}</span>
+                </div>
+                <p className="text-xs text-slate-300 pl-6 leading-relaxed">{chk.recommendation}</p>
+                {chk.verifiedNote && (
+                  <p className="text-[11px] text-emerald-400/90 pl-6 font-mono">Nota de checagem: {chk.verifiedNote}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SEÇÃO: LINKS INTERNOS RELACIONADOS (Até 3 artigos verídicos da mesma categoria) */}
+      {/* ========================================================================= */}
+      {post?.relatedInternalLinks && post.relatedInternalLinks.length > 0 && (
+        <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-cyan-950/20 via-slate-900/80 to-slate-950 border border-cyan-500/30 shadow-xl space-y-4">
+          <div className="flex items-center gap-3 border-b border-cyan-500/20 pb-3">
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+              <Link2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-display font-black text-lg text-white">
+                Matérias Relacionadas da Mesma Categoria
+              </h3>
+              <p className="text-xs text-cyan-300/80">
+                Aprofunde sua leitura com artigos verídicos do acervo CampoBR
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {post.relatedInternalLinks.map((rel, rIdx) => (
+              <button
+                key={rIdx}
+                type="button"
+                onClick={() => onNavigateToPost && onNavigateToPost(rel.slug || rel.id)}
+                className="text-left p-4 rounded-xl bg-slate-950/70 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 transition-all group cursor-pointer flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 block mb-1">
+                    {rel.category || post.category}
+                  </span>
+                  <h4 className="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors line-clamp-2">
+                    {rel.title}
+                  </h4>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center gap-1.5 text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">
+                  <span>Ler artigo</span>
+                  <ExternalLink className="w-3 h-3" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SEÇÃO PRINCIPAL: FONTES CITADAS & APURAÇÃO COM GROUNDING GOOGLE SEARCH */}
+      {/* ========================================================================= */}
+      {post?.citedSources && post.citedSources.length > 0 && (
+        <div className="mt-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#07131b] via-[#091522] to-[#0d1c28] border-2 border-emerald-500/40 shadow-2xl space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display font-black text-base sm:text-lg text-white">
+                    Fontes Citadas & Apuração Jornalística
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black uppercase tracking-wider">
+                    Grounding Verificado
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-300/80 flex items-center gap-1.5 mt-0.5">
+                  <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>
+                    Consulta realizada em: <strong>{post.researchTimestamp || 'Horário de Brasília (BRT)'}</strong>
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-slate-300 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span className="font-bold text-emerald-400">{post.citedSources.length}</span> fontes verificadas
+            </div>
+          </div>
+
+          {/* Editorial Disclaimer as required */}
+          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-emerald-500/20 text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-white">Nota Editorial:</strong> O robô inteligente utiliza o <em>Google Search Grounding</em> para apuração de fatos recentes em tempo real. Cada afirmação nesta matéria foi correlacionada com sua respectiva fonte documental e passou por validação editorial humana. Não utilizamos números simulados ou alegações sem respaldo.
+            </div>
+          </div>
+
+          {/* List of sources with sustained claims */}
+          <div className="space-y-3 pt-1">
+            {post.citedSources.map((source, sIdx) => (
+              <div 
+                key={sIdx}
+                className="p-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-900 border border-slate-800/80 hover:border-emerald-500/40 transition-all space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span className="font-bold text-white text-xs sm:text-sm truncate">
+                      {source.title || source.domain || 'Fonte Documentada'}
+                    </span>
+                    {source.domain && (
+                      <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded shrink-0">
+                        {source.domain}
+                      </span>
+                    )}
+                  </div>
+
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      if (post.id) {
+                        valueAnalyticsService.trackSourceCitationClick(source.url, source.domain, post.id);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 underline decoration-emerald-500/40 shrink-0 ml-2"
+                  >
+                    <span>Acessar Fonte</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+
+                {source.claimSustained && (
+                  <div className="text-xs text-slate-300 pl-4 border-l-2 border-emerald-500/30">
+                    <span className="text-slate-400 font-semibold">Afirmação sustentada: </span>
+                    <span>"{source.claimSustained}"</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Claims supported summary */}
+          {post.claimsSupported && post.claimsSupported.length > 0 && (
+            <div className="mt-3 p-3 rounded-xl bg-slate-950/50 border border-slate-800 text-xs text-slate-300">
+              <span className="font-bold text-emerald-400 uppercase tracking-wider text-[10px] block mb-1">
+                Fatos Checados & Sustentados:
+              </span>
+              <ul className="space-y-1.5 text-slate-300">
+                {post.claimsSupported.map((c, cIdx) => (
+                  <li key={cIdx} className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                    <div>
+                      <span className="text-slate-200 font-medium leading-relaxed">"{c.claim}"</span>
+                      {c.sourceTitle && (
+                        <span className="text-slate-400 text-[11px] block mt-0.5">Fonte: {c.sourceTitle}</span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Unverified Claims / Warnings if any */}
+          {post.unverifiedClaims && post.unverifiedClaims.length > 0 && (
+            <div className="mt-3 p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200">
+              <span className="font-bold text-amber-300 uppercase tracking-wider text-[10px] block mb-1">
+                ⚠️ Informações em Apuração Contínua:
+              </span>
+              <ul className="list-disc list-inside space-y-1">
+                {post.unverifiedClaims.map((u, uIdx) => (
+                  <li key={uIdx}>{u}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

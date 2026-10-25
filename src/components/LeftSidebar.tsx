@@ -11,8 +11,11 @@ import {
   TrendingUp,
   Activity,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Download
 } from 'lucide-react';
+
+import { valueAnalyticsService } from '../services/valueAnalyticsService';
 
 interface LeftSidebarProps {
   searchQuery: string;
@@ -22,6 +25,7 @@ interface LeftSidebarProps {
   categoryCounts: Record<string, number>;
   liveMatches: MatchLiveScore[];
   onOpenMatchDetails?: (match: MatchLiveScore) => void;
+  onOpenDownload?: () => void;
 }
 
 export const LeftSidebar: React.FC<LeftSidebarProps> = ({
@@ -31,6 +35,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
   onSelectCategory,
   categoryCounts,
   liveMatches,
+  onOpenDownload,
 }) => {
   const [newsletterSubscribed, setNewsletterSubscribed] = React.useState(false);
   const [newsletterEmail, setNewsletterEmail] = React.useState('');
@@ -38,6 +43,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail.trim()) return;
+    valueAnalyticsService.trackNewsletterSignup('sidebar_left', newsletterEmail);
     setNewsletterSubscribed(true);
     setNewsletterEmail('');
     setTimeout(() => setNewsletterSubscribed(false), 5000);
@@ -253,6 +259,36 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
           </form>
         )}
       </div>
+
+      {/* Box de Download Oficial do Projeto (Acessível a qualquer momento) */}
+      {onOpenDownload && (
+        <div className="rounded-2xl p-4 bg-gradient-to-br from-amber-950/30 via-slate-900/90 to-emerald-950/30 border border-amber-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+              <Download className="w-4 h-4 text-amber-400 animate-pulse" />
+              Download do Projeto
+            </span>
+            <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500 text-slate-950">
+              ZIP
+            </span>
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white">
+              Baixar Código-Fonte & Build
+            </h4>
+            <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+              Baixe o projeto completo em React + TypeScript ou a versão compilada (dist.zip) para sua hospedagem.
+            </p>
+          </div>
+          <button
+            onClick={onOpenDownload}
+            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-amber-950/50 transition-all cursor-pointer"
+          >
+            <Download className="w-4 h-4" />
+            <span>Baixar Projeto (ZIP)</span>
+          </button>
+        </div>
+      )}
     </aside>
   );
 };

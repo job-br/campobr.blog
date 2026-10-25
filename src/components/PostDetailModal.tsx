@@ -40,6 +40,7 @@ import { ShopeeAffiliateShowcase } from './ShopeeAffiliateShowcase';
 import { FanPollWidget } from './FanPollWidget';
 import { FastImage } from './FastImage';
 import { DEFAULT_FALLBACK_IMAGE } from '../services/imageOptimizer';
+import { valueAnalyticsService } from '../services/valueAnalyticsService';
 
 interface PostDetailModalProps {
   post: Post | null;
@@ -399,6 +400,8 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   };
 
   const handleShare = (network: 'whatsapp' | 'twitter' | 'copy') => {
+    const platform = network === 'copy' ? 'copy_link' : network;
+    valueAnalyticsService.trackArticleShare(platform, post.id);
     const url = `${window.location.origin}/?materia=${post.slug || post.id}`;
     const shareMessage = `⚽ *${post.title}*\n\nConfira os bastidores e a análise completa no CampoBR:\n${url}`;
 

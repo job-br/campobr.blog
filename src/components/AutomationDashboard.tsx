@@ -272,22 +272,24 @@ export const AutomationDashboard: React.FC<AutomationDashboardProps> = ({ onRefr
 
     const finalImage = formImageUrl.trim() || fallbackImages[formCategory] || fallbackImages['Clubes Serie A'];
 
+    const isPriceGiven = Boolean(formPrice.trim());
     await addUserShopeeProduct({
       title: formTitle.trim(),
       category: formCategory,
-      priceDisplay: formPrice.trim() || 'R$ 89,90',
+      priceDisplay: isPriceGiven ? formPrice.trim() : 'Verificar preço atual (Check current price)',
       originalPrice: formOriginalPrice.trim() || undefined,
-      rating: 4.9,
-      reviewCount: Math.floor(Math.random() * 2400) + 500,
-      soldCountDisplay: '+1mil vendidos',
+      currentPriceVerified: isPriceGiven,
+      verifiedStatus: formUrl.trim() ? 'verified' : 'unverified',
       imageUrl: finalImage,
-      badge: formBadge.trim() || 'Meu Link Oficial',
+      badge: formBadge.trim() || (formUrl.trim() ? 'Link Verificado' : 'Marketplace'),
       searchQuery: formTitle.trim(),
       directShopeeUrl: formUrl.trim(),
-      description: formDescription.trim() || 'Produto oficial com cupom de desconto e entrega garantida pela Shopee.',
-      freeShipping: true,
+      description: formDescription.trim() || 'Item selecionado para torcedores e praticantes de futebol.',
+      freeShipping: false,
       keywords: keywordsArray,
       isUserRealProduct: true,
+      productSpecifications: ['Verificar especificações na loja oficial'],
+      editorialNotes: 'Link de produto adicionado pela redação.',
     });
 
     const updated = getUserShopeeProducts();
@@ -1491,11 +1493,11 @@ https://s.shopee.com.br/exemplo3 - Chuteira Society Masculina Travas`}
             <div className="space-y-1.5 max-w-3xl">
               <span className="text-emerald-400 font-bold uppercase text-[11px] flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Robô Inteligente: Revisão Editorial + Imagens Atraentes Gemini + Aplicação Estruturada no Conteúdo
+                Robô Inteligente: Automação 100% Futebolística + Imagens Alinhadas ao Conteúdo + Alto CTR
               </span>
               <p className="text-slate-300 text-xs leading-relaxed">
-                <strong>1. Revisão Editorial Pré-Postagem:</strong> O robô inteligente audita minuciosamente toda a matéria antes de publicar (elimina clichês de IA, refina o gancho dramático e valida os blocos de Tabela e Confronto).<br/>
-                <strong>2. Imagens Chamativas Criadas pelo Conteúdo:</strong> O Google Gemini analisa os lances, protagonistas e a atmosfera do texto completo para vincular imagens fotográficas de altíssimo apelo visual que atraem cliques imediatos.<br/>
+                <strong>1. Imagens 100% no Tema Futebol:</strong> O robô inteligente vincula exclusivamente fotos de futebol profissional (lances capitais, jogadas de área, arquibancadas, craques e pranchetas táticas) alinhadas rigorosamente ao conceito informativo do título e do corpo da matéria.<br/>
+                <strong>2. Revisão Editorial Pré-Postagem:</strong> O robô inteligente audita minuciosamente toda a matéria antes de publicar (elimina clichês de IA, refina o gancho dramático e valida os blocos de Tabela e Confronto).<br/>
                 <strong>3. Aplicação Estruturada no Conteúdo:</strong> O robô inteligente insere automaticamente a leitura tática, atmosfera de arena e consistência com o leitor, criando uma experiência cativante e uniforme.
               </p>
             </div>

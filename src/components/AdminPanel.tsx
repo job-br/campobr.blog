@@ -56,6 +56,9 @@ import {
   HumanizedScheduleResult,
   PeakSlot 
 } from '../utils/humanSchedule';
+import { EditorialSpreadsheetQueue } from './EditorialSpreadsheetQueue';
+import { GoogleEcosystemHub } from './GoogleEcosystemHub';
+import { Table, Activity } from 'lucide-react';
 
 interface AdminPanelProps {
   posts: Post[];
@@ -80,10 +83,34 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onAdminLogout,
   onOpenQuickNewPost,
 }) => {
-  const [adminTab, setAdminTab] = useState<'manage' | 'create' | 'trends' | 'automation' | 'ads' | 'firebase' | 'export'>('manage');
+  const [adminTab, setAdminTab] = useState<
+    'manage' | 'create' | 'editorial-queue' | 'google-ecosystem' | 'trends' | 'automation' | 'ads' | 'firebase' | 'export'
+  >('manage');
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [searchManageTerm, setSearchManageTerm] = useState('');
   const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
+
+  const handleOpenDraftInEditor = (draft: {
+    title: string;
+    summary: string;
+    content: string;
+    category: FootballCategory;
+    tags: string[];
+    sources: any[];
+  }) => {
+    setEditingPostId(null);
+    setTitle(draft.title);
+    setCategory(draft.category);
+    setSummary(draft.summary);
+    setContent(draft.content);
+    setTagsInput(draft.tags ? draft.tags.join(', ') : 'Futebol, Brasileirão, Tática');
+    setAdminTab('create');
+    setNotification({
+      text: 'Rascunho gerado pelo Robô com Grounding carregado no editor! Revise antes de publicar.',
+      type: 'success',
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Form State
   const [title, setTitle] = useState('');
@@ -571,6 +598,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         </button>
 
         <button
+          onClick={() => setAdminTab('editorial-queue')}
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
+            adminTab === 'editorial-queue'
+              ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-black shadow-md shadow-emerald-500/30'
+              : 'bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30'
+          }`}
+        >
+          <Table className="w-4 h-4 text-emerald-400" />
+          <span>📋 Fila Editorial & Base (Planilha)</span>
+        </button>
+
+        <button
+          onClick={() => setAdminTab('google-ecosystem')}
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
+            adminTab === 'google-ecosystem'
+              ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black shadow-md shadow-indigo-500/30'
+              : 'bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/30'
+          }`}
+        >
+          <Activity className="w-4 h-4 text-indigo-400" />
+          <span>🌐 8 Ferramentas Google & Valor</span>
+        </button>
+
+        <button
           onClick={() => setAdminTab('trends')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
             adminTab === 'trends'
@@ -630,6 +681,37 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <span>Baixar Arquivos (ZIP)</span>
         </button>
       </div>
+
+      {/* ======================================================== */}
+      {/* TAB: FILA EDITORIAL & BASE DE CONHECIMENTO (PLANILHA) */}
+      {/* ======================================================== */}
+      {adminTab === 'editorial-queue' && (
+        <div className="space-y-4">
+          <EditorialSpreadsheetQueue
+            existingPosts={posts}
+            onOpenDraftInEditor={handleOpenDraftInEditor}
+            onPostPublished={() => {
+              onRefreshPosts();
+              setNotification({
+                text: 'Matéria aprovada e publicada no blog CampoBR!',
+                type: 'success',
+              });
+            }}
+          />
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* TAB: ECOSSISTEMA GOOGLE (8 FERRAMENTAS & MÉTRICAS DE VALOR) */}
+      {/* ======================================================== */}
+      {adminTab === 'google-ecosystem' && (
+        <div className="space-y-4">
+          <GoogleEcosystemHub
+            adsConfig={adsConfig}
+            onUpdateAdsConfig={onUpdateAdsConfig}
+          />
+        </div>
+      )}
 
       {/* ======================================================== */}
       {/* TAB 1: MANAGE POSTS (SEARCH, EDIT, DELETE ANY OF 36) */}

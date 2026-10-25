@@ -8,12 +8,13 @@ import {
   X, 
   Eye, 
   EyeOff, 
-  LockKeyhole
+  LockKeyhole,
+  Copy,
+  Check
 } from 'lucide-react';
 import { 
   requestAdminStep1,
-  loginWithGoogleAdmin,
-  AUTHORIZED_ADMIN_EMAIL
+  loginWithGoogleAdmin
 } from '../services/adminAuth';
 import { loginWithGoogle } from '../services/firebase';
 import { AdminSession } from '../types';
@@ -33,24 +34,42 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isDomainUnauthorized, setIsDomainUnauthorized] = useState(false);
+  const [copiedDomain, setCopiedDomain] = useState(false);
   const [isCredentialsLoading, setIsCredentialsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  // Limpa os campos sempre que o modal abre ou fecha
+  const currentHostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isNetlifyOrCustom = currentHostname && !currentHostname.includes('localhost') && !currentHostname.includes('firebaseapp.com') && !currentHostname.includes('web.app') && !currentHostname.includes('run.app');
+
+  // Reseta campos sempre que o modal abre
   useEffect(() => {
-    setEmail('');
-    setPassword('');
-    setShowPassword(false);
-    setErrorMsg(null);
-    setIsCredentialsLoading(false);
-    setIsGoogleLoading(false);
+    if (isOpen) {
+      setEmail('');
+      setPassword('');
+      setShowPassword(false);
+      setErrorMsg(null);
+      setIsDomainUnauthorized(false);
+      setCopiedDomain(false);
+      setIsCredentialsLoading(false);
+      setIsGoogleLoading(false);
+    }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const handleCopyHostname = () => {
+    if (currentHostname && navigator.clipboard) {
+      navigator.clipboard.writeText(currentHostname);
+      setCopiedDomain(true);
+      setTimeout(() => setCopiedDomain(false), 3000);
+    }
+  };
+
   // Login Direto com a Conta Google Oficial do Proprietário
   const handleGoogleLogin = async () => {
     setErrorMsg(null);
+    setIsDomainUnauthorized(false);
     setIsGoogleLoading(true);
 
     try {
@@ -70,12 +89,13 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
       setIsGoogleLoading(false);
       console.error('Erro Google Auth:', err);
       const errObj = err as { code?: string; message?: string };
-      if (errObj?.code === 'auth/unauthorized-domain') {
-        setErrorMsg('Domínio Netlify não autorizado no Firebase Auth! No Console do Firebase (Authentication > Configurações > Domínios Autorizados), adicione o seu domínio .netlify.app. Enquanto isso, use o login com senha abaixo.');
+      if (errObj?.code === 'auth/unauthorized-domain' || (errObj?.message && errObj.message.includes('auth/unauthorized-domain'))) {
+        setIsDomainUnauthorized(true);
+        setErrorMsg('Domínio Netlify/Customizado ainda não autorizado no Firebase Authentication.');
       } else if (errObj?.code === 'auth/popup-closed-by-user') {
         setErrorMsg('Janela de login com Google fechada antes da confirmação.');
       } else {
-        setErrorMsg('Falha na autenticação Google. Caso o domínio não esteja no Firebase, utilize o login com senha abaixo.');
+        setErrorMsg('Falha na autenticação Google. Utilize o login com senha mestra abaixo.');
       }
     }
   };
@@ -91,7 +111,6 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
       setIsCredentialsLoading(false);
 
       if (result.success && result.session) {
-        setEmail('');
         setPassword('');
         onSuccess(result.session);
         onClose();
@@ -145,16 +164,73 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-6 space-y-5">
-          {errorMsg && (
+          {errorMsg && !isDomainUnauthorized && (
             <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/40 flex items-start gap-2.5 text-rose-300 text-xs font-medium leading-relaxed animate-fade-in">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
+          {/* Card explicativo e interativo quando o domínio não estiver autorizado no Firebase */}
+          {isDomainUnauthorized && (
+            <div className="p-4 rounded-2xl bg-amber-950/70 border border-amber-500/50 space-y-3 animate-fade-in text-left">
+              <div className="flex items-start gap-2.5">
+                <AlertCircle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-amber-200">
+                    Domínio Netlify não autorizado no Firebase Auth
+                  </h4>
+                  <p className="text-[11px] text-amber-300/90 leading-relaxed mt-0.5">
+                    O Firebase Authentication bloqueia o Google Login em sites que ainda não foram cadastrados na lista de domínios autorizados do seu projeto Firebase.
+                  </p>
+                </div>
+              </div>
+
+              {currentHostname && (
+                <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block">Domínio a cadastrar no Firebase:</span>
+                    <span className="text-xs font-mono font-bold text-amber-300 truncate block">
+                      {currentHostname}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyHostname}
+                    className="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[11px] uppercase flex items-center gap-1 shrink-0 cursor-pointer transition-all"
+                  >
+                    {copiedDomain ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedDomain ? 'Copiado!' : 'Copiar'}</span>
+                  </button>
+                </div>
+              )}
+
+              <div className="text-[10.5px] text-amber-300/80 space-y-1 pl-1">
+                <p className="font-semibold text-amber-200">Como autorizar no Firebase Console (2 minutos):</p>
+                <p>1. Acesse o <strong>Console Firebase</strong> &gt; <strong>Authentication</strong> &gt; <strong>Configurações</strong>.</p>
+                <p>2. Na seção <strong>Domínios autorizados</strong>, clique em <strong>Adicionar domínio</strong>.</p>
+                <p>3. Cole <code className="bg-amber-950 px-1 py-0.5 rounded text-amber-200 font-mono">{currentHostname || 'seu-site.netlify.app'}</code> e salve.</p>
+              </div>
+
+              <div className="pt-2 border-t border-amber-500/20">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const pwdInput = document.getElementById('adm_auth_pwd_input');
+                    pwdInput?.focus();
+                  }}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md cursor-pointer transition-all"
+                >
+                  <Lock className="w-4 h-4 text-amber-400" />
+                  <span>Acessar via E-mail e Senha Abaixo</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="text-left space-y-3">
             <p className="text-xs text-slate-300 leading-relaxed">
-              Autenticação exclusiva do proprietário. Conecte-se com sua <strong className="text-white">Conta Google Oficial</strong> ou informe seu e-mail e senha administrativa:
+              Autenticação restrita ao administrador. Conecte-se com sua <strong className="text-white">Conta Google Oficial</strong> ou informe seu e-mail e senha:
             </p>
 
             {/* Opção 1: Login com Conta Google Oficial (1-Click) */}
@@ -189,7 +265,7 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
             </div>
           </div>
 
-          {/* FORMULÁRIO DE SEGURANÇA: GMAIL E SENHA */}
+          {/* FORMULÁRIO DE SEGURANÇA: E-MAIL E SENHA */}
           <form 
             onSubmit={handleCredentialsSubmit} 
             className="space-y-4" 
@@ -203,23 +279,16 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-slate-200">
-                  Gmail do Administrador
+                <label htmlFor="adm_auth_email_input" className="text-xs font-bold text-slate-200">
+                  E-mail do Administrador
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setEmail(AUTHORIZED_ADMIN_EMAIL)}
-                  className="text-[10px] text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer underline"
-                >
-                  Usar e-mail oficial
-                </button>
               </div>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   id="adm_auth_email_input"
                   name="campo_seguranca_usr"
-                  type="text"
+                  type="email"
                   inputMode="email"
                   required
                   autoComplete="off"
@@ -230,7 +299,7 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
                   data-form-type="other"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="exemplo@gmail.com"
+                  placeholder="seu-email@dominio.com"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-emerald-500 text-white text-sm outline-none transition-colors"
                 />
               </div>
@@ -287,16 +356,13 @@ export const Admin2FAModal: React.FC<Admin2FAModalProps> = ({
           </form>
 
           {/* Privacy & Security Guarantee Banner */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 space-y-1.5">
+          <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 space-y-1">
             <p className="flex items-center gap-1.5 font-bold text-slate-300">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Privacidade & Acesso do Proprietário</span>
+              <span>Ambiente Seguro & Criptografado</span>
             </p>
-            <p className="leading-relaxed">
-              Conta autorizada: <strong className="text-emerald-300">{AUTHORIZED_ADMIN_EMAIL}</strong>.
-            </p>
-            <p className="text-[10px] text-slate-400 leading-normal">
-              💡 <strong>Dica no Netlify:</strong> Você pode clicar no botão Google acima ou usar o e-mail oficial com a senha mestra <code className="text-amber-300 bg-slate-950 px-1 py-0.5 rounded border border-slate-700">admin2026</code>.
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Acesso restrito protegido por autenticação em dois fatores e validação de token em tempo real.
             </p>
           </div>
         </div>

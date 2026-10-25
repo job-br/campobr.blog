@@ -33,7 +33,7 @@ import { downloadSourceZipReliable } from './services/zipDownloader';
 import { MobileStickyAnchorAd } from './components/MobileStickyAnchorAd';
 import { LATEST_GOOGLE_MATCHES } from './services/googleSportsService';
 import { automationService } from './services/automationService';
-import { Loader2, Trash2, AlertTriangle, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { Loader2, Trash2, AlertTriangle, X, ArrowUp, ArrowDown, Download } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<PageTab>('inicio');
@@ -396,6 +396,7 @@ export default function App() {
                     onSelectCategory={setSelectedCategory}
                     categoryCounts={categoryCounts}
                     liveMatches={liveMatches}
+                    onOpenDownload={() => setIsDownloadModalOpen(true)}
                   />
                 </div>
 
@@ -625,6 +626,24 @@ export default function App() {
             title="Descer rapidamente até o rodapé da página"
           >
             <ArrowDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+        </div>
+      )}
+
+      {/* Botão Flutuante de Download Rápido do Projeto - Sempre acessível em qualquer tela sem precisar ser admin */}
+      {!selectedPost && (
+        <div className="fixed bottom-6 left-5 sm:left-7 z-40 animate-fade-in">
+          <button
+            type="button"
+            onClick={() => setIsDownloadModalOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-[#090f18]/95 hover:bg-slate-900 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 hover:text-white text-xs font-bold shadow-2xl transition-all cursor-pointer group backdrop-blur-md"
+            title="Baixar Projeto Completo ZIP (Código-Fonte e Build pronta)"
+          >
+            <Download className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform animate-pulse" />
+            <span className="hidden sm:inline">Baixar Projeto</span>
+            <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
+              ZIP
+            </span>
           </button>
         </div>
       )}

@@ -110,30 +110,31 @@ export const ShopeeAffiliateShowcase: React.FC<ShopeeAffiliateShowcaseProps> = (
                       {prod.badge}
                     </span>
                   )}
-                  {prod.isUserRealProduct && (
-                    <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-emerald-600/95 text-white font-black text-[8px] uppercase tracking-wider shadow-md flex items-center gap-0.5 border border-emerald-400">
-                      ★ Link Verificado
+                  {prod.verifiedStatus === 'verified' || prod.isUserRealProduct ? (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-emerald-600/95 text-white font-bold text-[9px] uppercase tracking-wider shadow-md flex items-center gap-1 border border-emerald-400">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Verificado / Verified
+                    </span>
+                  ) : (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-slate-900/90 text-amber-300 font-bold text-[9px] uppercase tracking-wider shadow-md flex items-center gap-1 border border-amber-500/40">
+                      Não Verificado / Unverified
                     </span>
                   )}
-                  {prod.freeShipping && (
-                    <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-emerald-950/90 text-emerald-300 font-bold text-[8px] uppercase tracking-wider border border-emerald-500/40 flex items-center gap-0.5">
-                      <Truck className="w-2.5 h-2.5" /> Frete Grátis
+                  {prod.asin && (
+                    <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-slate-900/90 text-slate-300 font-mono text-[9px] uppercase tracking-wider border border-slate-700">
+                      ASIN: {prod.asin}
                     </span>
                   )}
                 </div>
 
                 {/* Título & Detalhes */}
                 <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <div className="flex items-center gap-1 text-amber-400">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      <span className="font-bold text-[11px]">{prod.rating}</span>
-                      <span className="text-[10px] text-slate-500 font-normal">
-                        ({prod.reviewCount.toLocaleString('pt-BR')})
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-semibold text-slate-400">
-                      {prod.soldCountDisplay}
+                  <div className="flex items-center justify-between text-xs mb-1.5">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      {prod.category}
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      {prod.currentPriceVerified ? 'Preço confirmado' : 'Preço sob consulta'}
                     </span>
                   </div>
 
@@ -143,30 +144,48 @@ export const ShopeeAffiliateShowcase: React.FC<ShopeeAffiliateShowcaseProps> = (
                   <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                     {prod.description}
                   </p>
+
+                  {/* Separação de especificação objetiva e observação editorial */}
+                  {prod.productSpecifications && prod.productSpecifications.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-slate-800/80 text-[10px] text-slate-300">
+                      <span className="text-slate-400 font-bold block mb-0.5">Especificações:</span>
+                      <ul className="list-disc list-inside text-slate-400 space-y-0.5">
+                        {prod.productSpecifications.slice(0, 2).map((spec, sIdx) => (
+                          <li key={sIdx} className="truncate">{spec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Preço e CTA Shopee */}
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+              {/* Preço e CTA */}
+              <div className="mt-4 pt-3 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  {prod.originalPrice && (
-                    <span className="text-[10px] text-slate-500 line-through block">
-                      {prod.originalPrice}
+                  {prod.currentPriceVerified ? (
+                    <span className="font-display font-black text-base sm:text-lg text-[#ff6433]">
+                      {prod.priceDisplay}
                     </span>
+                  ) : (
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">
+                        Verificar preço atual
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        Check current price
+                      </span>
+                    </div>
                   )}
-                  <span className="font-display font-black text-base sm:text-lg text-[#ff6433]">
-                    {prod.priceDisplay}
-                  </span>
                 </div>
 
                 <a 
                   href={affiliateUrl}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#ee4d2d] to-[#ff5722] hover:from-[#d73f1f] hover:to-[#ee4d2d] text-white font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md shadow-[#ee4d2d]/30 transition-all cursor-pointer group-hover:translate-x-0.5"
+                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#ee4d2d] to-[#ff5722] hover:from-[#d73f1f] hover:to-[#ee4d2d] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-[#ee4d2d]/30 transition-all cursor-pointer group-hover:translate-x-0.5 shrink-0"
                 >
                   <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
-                  <span>Ver na Shopee</span>
+                  <span>{prod.currentPriceVerified ? 'Ver na Loja' : 'Check Price'}</span>
                   <ExternalLink className="w-3 h-3 shrink-0 opacity-80" />
                 </a>
               </div>

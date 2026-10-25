@@ -96,6 +96,20 @@ export const Footer: React.FC<FooterProps> = ({
                 <Music2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
             </div>
+
+            <div className="pt-2">
+              <button
+                onClick={() => setIsDownloadModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-emerald-500/25 to-teal-500/20 hover:from-amber-500/35 hover:to-emerald-500/35 border border-emerald-500/50 text-emerald-300 hover:text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-950/40"
+                title="Baixar Projeto Completo (ZIP)"
+              >
+                <Download className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <span>Baixar Projeto (ZIP)</span>
+                <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded font-black">
+                  CÓDIGO + DIST
+                </span>
+              </button>
+            </div>
           </div>
 
           {/* Column 3: Categorias */}
@@ -193,19 +207,17 @@ export const Footer: React.FC<FooterProps> = ({
                   </button>
                 </li>
               )}
-              {/* Link de download do ZIP gerado - Exclusivo para o ambiente do projeto */}
-              {isProjectEnv && (
-                <li>
-                  <button
-                    onClick={() => setIsDownloadModalOpen(true)}
-                    className="text-amber-400 hover:text-amber-300 font-semibold transition-colors cursor-pointer text-left flex items-center gap-1.5"
-                    title="Baixar arquivos compilados (Disponível apenas no ambiente do projeto)"
-                  >
-                    <Download className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Baixar Arquivos (ZIP)</span>
-                  </button>
-                </li>
-              )}
+              {/* Link direto de download do ZIP gerado - Sempre acessível a todos */}
+              <li>
+                <button
+                  onClick={() => setIsDownloadModalOpen(true)}
+                  className="text-amber-400 hover:text-amber-300 font-bold transition-colors cursor-pointer text-left flex items-center gap-1.5"
+                  title="Baixar arquivos compilados ou código-fonte completo (ZIP)"
+                >
+                  <Download className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                  <span>Baixar Projeto Completo (ZIP)</span>
+                </button>
+              </li>
             </ul>
           </div>
 
