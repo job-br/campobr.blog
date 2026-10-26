@@ -4,6 +4,7 @@ import {
   collection, 
   query, 
   orderBy, 
+  limit, 
   getDocs, 
   setDoc, 
   doc, 
@@ -177,7 +178,7 @@ async function run() {
 
   console.log('Consultando Firestore...');
   const postsRef = collection(db, 'posts');
-  const q = query(postsRef, orderBy('createdAt', 'desc'));
+  const q = query(postsRef, orderBy('createdAt', 'desc'), limit(80));
   const snap = await getDocs(q);
   const existingPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 

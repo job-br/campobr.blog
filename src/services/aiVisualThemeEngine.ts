@@ -312,700 +312,510 @@ export function generateUniqueThematicSVG(
 }
 
 /**
- * Biblioteca Curada de 86 Imagens Fotográficas Verificadas (100% Retorno HTTP 200, Zero Duplicatas)
- * Imagens de altíssimo apelo visual, tensão competitiva, celebração, estádios monumentais e detalhes táticos.
+ * Lista rigorosa de IDs e fragmentos de fotos legadas NÃO-FUTEBOLÍSTICAS (escritórios, laptops, café, basquete, montanhas, tênis, ioga, etc.)
+ * NENHUMA foto desta lista pode ser atribuída a matérias esportivas do CampoBR.
+ */
+export const DEPRECATED_NON_FOOTBALL_PHOTOS = [
+  '1508098682722-e99c43a406b2', // 404 old photo
+  '1521737604893', // corporate meeting
+  '1552667466',    // corporate laptops
+  '1518173946687', // window rain
+  '1508807526345', // savannah landscape
+  '1534067783941', // mountains
+  '1511193311914', // cold mountains
+  '1567532939604', // living room armchair
+  '1522778119026-d647f0596c20', // Xícara de café com latte art
+  '1509042239860-f550ce710b93', // Xícara de café em pires
+  '1517927033932-b3d18e61fb3a', // Tabela / cesta de basquete
+  '1546519638-68e109498ffc', // Tabela de basquete retro
+  '1431324155629-1a6deb1dec8d', // Mesa de escritório corporativo com laptops
+  '1517048676732-d65bc937f952', // Reunião de negócios executiva
+  '1520607162513-77705c0f0d4a', // Escritório corporativo moderno
+  '1517245386807-bb43f82c33c4', // Pessoas trabalhando em computadores
+  '1518709268805-4e9042af9f23', // Placa de circuito eletrônico
+  '1505373877841-8d25f7d46678', // Sala de conferência com monitores
+  '1517747614396-d21a78b850e8', // Par de tênis vermelhos na rua
+  '1516478177764-9fe5bd7e9717', // Tênis Nike Air Jordan
+  '1516245834210-c4c142787335', // Moeda de Bitcoin / Cripto
+  '1464366400600-7168b8af9bc3', // Taças de champanhe / festa de casamento
+  '1518609878373-06d740f60d8b', // Mulher fazendo alongamento / ioga no chão
+  '1541534741688-6078c6bfb5c5', // Musculação em academia
+  '1526232761682-d26e03ac148e', // Troféu dourado genérico com bokeh
+  '1508739773434-c26b3d09e071', // Pico de montanha ao entardecer
+  '1486286701208-1d58e9338013', // Montanhas no deserto com céu azul
+  '1489944440615-453fc2b6a9a9', // Cordilheira ao pôr do sol
+  '1513836279014-a89f7a76ae86', // Floresta de pinheiros e neblina
+  '1514525253161-7a46d19cd819', // Palco de show com holofotes de festa
+  '1493225457124-a3eb161ffa5f', // Show de música / festival
+  '1550881111-7cfde14b8073', // Confetes de balada
+  '1531415074968-036ba1b575da', // Campo de beisebol americano
+  '1501386761578-eac5c94b800a', // Multidão em festival de rock
+  '1506157786151-b8491531f063', // Show de rock com iluminação
+  '1563299796-17596ed6b017', // Relógio de parede e interior
+  '1527529482837-4698179dc6ce', // Pista de dança em boate
+  '1528722828814-77b9b83aafb2', // Tabuleiro de xadrez
+  '1516450360452-9312f5e86fc7', // Festa com luzes de discoteca
+  '1496337589254-7e19d01cec44', // Show musical noturno
+  '1499364615650-ec38552f4f34', // Festival de música pop
+  '1508615039623-a25605d2b022', // Spa e toalhas de banho
+  '1577471488278-16eec37ffcc2', // Galpão industrial
+  '1551288049-bebda4e38f71', // Gráficos de finanças corporativas
+];
+
+/**
+ * Valida se uma URL contém fotos não-futebolísticas ou quebradas
+ */
+export function isDeprecatedNonFootballUrl(url?: string | null): boolean {
+  if (!url) return true;
+  return DEPRECATED_NON_FOOTBALL_PHOTOS.some(pattern => url.includes(pattern));
+}
+
+/**
+ * Biblioteca Temática 100% Futebolística de Alto Impacto do CampoBR (Zero Fotos Não-Futebolísticas)
+ * Combina os novos ativos cinematográficos de alta fidelidade locais com fotos verificadas de estádios e gramados.
  */
 export const THEMATIC_IMAGE_LIBRARY: ThematicImageDescriptor[] = [
-  // --- JOGADORES: ARTILHEIROS, CAMISAS 9, GOLAÇOS & COMEMORAÇÕES ---
+  // 1. JOGADORES & REVELAÇÕES (Dribles, Wonderkids, Artilharia e Craques)
   {
-    id: 'art-striker-celebration-1',
-    url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['camisa 9', 'artilheiro', 'gol', 'finalização', 'faro de gol', 'predador', 'área', 'decisivo', 'comemoração'],
-    description: 'Atacante camisa 9 em comemoração apoteótica de gol decisivo com braços abertos',
-    dominantMood: 'celebração'
+    id: "art-wonderkid-estevao-dribble",
+    url: "/images/brazilian_wonderkid_dribble_1792750181934.webp",
+    category: "Jogadores",
+    tags: ["estêvão", "estevao", "drible", "joia", "palmeiras", "wonderkid", "velocidade", "ponta", "mano a mano", "desequilíbrio", "revelação", "safra"],
+    description: "Estêvão em arrancada fulminante pela ponta e drible desconcertante no gramado",
+    dominantMood: "drible",
+    clubAffinity: "palmeiras"
   },
   {
-    id: 'art-striker-kick-2',
-    url: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['chute', 'finalizador', 'artilharia', 'camisa 9', 'potência', 'bola na rede', 'golaço', 'voleio'],
-    description: 'Finalização certeira de voleio no ângulo indefensável do gol',
-    dominantMood: 'celebração'
+    id: "art-vini-jr-sprint-show",
+    url: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["vini jr", "vinicius junior", "drible", "velocidade", "el clásico", "trono mundial", "ousadia", "ala", "ponta", "seleção"],
+    description: "Vinicius Júnior desmontando a linha defensiva rival com velocidade e finta desconcertante",
+    dominantMood: "drible",
+    clubAffinity: "selecao"
   },
   {
-    id: 'art-young-wonderkid-1',
-    url: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['jovem', 'craque', 'drible', 'safra', 'promessa', 'estêvão', 'velocidade', 'ousadia', 'garotada'],
-    description: 'Jovem talento em arrancada veloz com a bola colada ao pé',
-    dominantMood: 'drible'
+    id: "art-striker-camisa9-hat-trick",
+    url: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["camisa 9", "artilheiro", "hat-trick", "gol", "finalização", "faro de gol", "rodrygo", "paraguai", "goleada", "faro"],
+    description: "Atacante camisa 9 em comemoração apoteótica de hat-trick sob os holofotes do estádio",
+    dominantMood: "celebração",
+    clubAffinity: "selecao"
   },
   {
-    id: 'art-young-dribbler-2',
-    url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['drible curto', 'habilidade', 'pontas', 'finta', 'talento', 'geração', 'vini jr', 'caneta', 'elástico'],
-    description: 'Drible desconcertante desequilibrando a linha defensiva rival',
-    dominantMood: 'drible'
+    id: "art-playmaker-gerson-garro",
+    url: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["meio-campo", "gerson", "rodrigo garro", "camisa 10", "maestria", "passe", "visão de jogo", "orquestra", "armador"],
+    description: "Maestro do meio-campo conduzindo a partida com passes milimétricos no círculo central",
+    dominantMood: "tático"
   },
   {
-    id: 'art-midfielder-playmaker-1',
-    url: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['meio-campo', 'maestria', 'camisa 10', 'visão de jogo', 'gerson', 'passe', 'ritmo', 'armador', 'arshavin'],
-    description: 'Armador clássico dominando o círculo central com visão panorâmica e passes verticais',
-    dominantMood: 'tático'
+    id: "art-endrick-acrescimos-bomba",
+    url: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["endrick", "predador", "acréscimos", "bomba", "decisivo", "marca da cal", "pênalti", "pressão", "foco"],
+    description: "Finalização potente e sangue-frio no lance capital da partida sob pressão máxima",
+    dominantMood: "celebração"
   },
   {
-    id: 'art-winger-sprint-1',
-    url: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['velocidade', 'luiz henrique', 'ponta', 'explosão', 'arrancada', 'linha de fundo', 'cruzamento'],
-    description: 'Extremo veloz em transição ofensiva fulminante pela ponta direita',
-    dominantMood: 'drible'
+    id: "art-memphis-depay-falta",
+    url: "https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["memphis depay", "corinthians", "dedos nos ouvidos", "arena", "golaço", "falta", "gaveta", "timão"],
+    description: "Golaço magistral na gaveta do ângulo e a celebração icônica com dedos nos ouvidos",
+    dominantMood: "celebração",
+    clubAffinity: "corinthians"
   },
   {
-    id: 'art-defender-tackle-1',
-    url: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['zagueiro', 'desarme', 'defesa', 'solidez', 'raça', 'combate', 'bloqueio', 'muralha', 'segurança'],
-    description: 'Carrinho milimétrico e desarme limpo na entrada da grande área',
-    dominantMood: 'tático'
+    id: "art-striker-header-box",
+    url: "https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["centroavante", "cabeceio", "bola aérea", "camisa 9", "área", "vigor", "disputa no alto", "finalização", "igor jesus", "botafogo", "artilheiro"],
+    description: "Cabeceio certeiro dividindo com a zaga no coração da grande área",
+    dominantMood: "celebração",
+    clubAffinity: "botafogo"
   },
   {
-    id: 'art-striker-focus-3',
-    url: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['concentração', 'camisa 9', 'foco', 'pênalti', 'decisão', 'artilheiro', 'marca da cal', 'pressão'],
-    description: 'Concentração absoluta do goleador fitando o goleiro antes da penalidade',
-    dominantMood: 'celebração'
+    id: "art-goalkeeper-defense-paredao",
+    url: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["goleiro", "paredão", "alisson", "ederson", "defesaça", "milagre", "último minuto", "segurança", "espalma"],
+    description: "Defesa milagrosa do goleiro espalmando a bola no ângulo nos acréscimos",
+    dominantMood: "tático"
   },
   {
-    id: 'art-striker-pedro-header',
-    url: 'https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['faro de gol', 'cabeceio', 'pedro', 'área', 'camisa 9', 'artilharia', 'segundo pau', 'infiltração'],
-    description: 'Finalização de cabeça letal no coração da grande área dividindo com zagueiros',
-    dominantMood: 'celebração'
+    id: "art-cleats-penalty-turf",
+    url: "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["chuteiras", "marca da cal", "pênalti", "concentração", "grama", "tensão", "decisão"],
+    description: "Chuteiras profissionais cravadas no gramado verde no instante supremo da cobrança",
+    dominantMood: "tático"
   },
   {
-    id: 'art-wonderkid-sprint-endrick',
-    url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['endrick', 'estevao', 'joia', 'sprint', 'potência', 'velocidade', 'garotada', 'arrancada'],
-    description: 'Explosão muscular da nova geração de joias rumo ao ataque fulminante',
-    dominantMood: 'drible'
+    id: "art-ball-rippling-net",
+    url: "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["bola na rede", "gol", "explosão", "estufar a rede", "virada", "alívio", "bomba"],
+    description: "A bola estufando a rede do gol no momento supremo de explosão da torcida",
+    dominantMood: "celebração"
   },
   {
-    id: 'art-midfield-general-gerson',
-    url: 'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['coringa', 'gerson', 'construção', 'cadência', 'meio-campo', 'maestria', 'leitura'],
-    description: 'Distribuição de jogo precisa quebrando a primeira linha de marcação rival',
-    dominantMood: 'tático'
+    id: "art-winger-flank-acceleration",
+    url: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["ponta", "linha de fundo", "arrancada", "luiz henrique", "cruzamento", "velocidade", "explosão"],
+    description: "Arrancada vertiginosa em direção à linha de fundo com a chuteira no gramado",
+    dominantMood: "drible"
   },
   {
-    id: 'art-cleats-penalty-spot',
-    url: 'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['pênalti', 'chuteira', 'marca da cal', 'tensão', 'decisão', 'frio', 'cobrador'],
-    description: 'Chuteiras cravadas no gramado na marca do pênalti no instante supremo',
-    dominantMood: 'tático'
+    id: "art-sliding-tackle-clean",
+    url: "https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["desarme", "carrinho", "zagueiro", "raça", "marcação", "bloco baixo", "combate", "segurança"],
+    description: "Carrinho cirúrgico na grama com desarme providencial travando o chute adversário",
+    dominantMood: "tático"
   },
   {
-    id: 'art-ball-wet-turf-reflection',
-    url: 'https://images.unsplash.com/photo-1524015368236-bbf6f72545b6?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['bola oficial', 'chuva', 'reflexos', 'gramado molhado', 'noite', 'precisão'],
-    description: 'A pelota no gramado encharcado refletindo a luz dos refletores',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'art-goalkeeper-miracle-save',
-    url: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['goleiro', 'defesaça', 'milagre', 'muralha', 'alisson', 'ederson', 'bento', 'espalma'],
-    description: 'Espalma sensacional no ângulo salvando o time no último minuto dos acréscimos',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'art-net-bulging-explosion',
-    url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['gol', 'bola na rede', 'golaço', 'bomba', 'explosão', 'artilheiro', 'estufar'],
-    description: 'A apoteose do gol com a bola sacudindo violentamente o fundo das redes',
-    dominantMood: 'celebração'
-  },
-  {
-    id: 'art-crossbar-rattle-thrill',
-    url: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['trave', 'quase gol', 'finalização', 'emoção', 'chute', 'bomba', 'susto'],
-    description: 'A bola carimbando o travessão em lance de tirar o fôlego da torcida',
-    dominantMood: 'celebração'
-  },
-  {
-    id: 'art-sprint-breakaway-flank',
-    url: 'https://images.unsplash.com/photo-1536122985607-4fe00b283652?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['arrancada', 'contra-ataque', 'transição', 'velocidade', 'rompimento', 'ponta'],
-    description: 'Arrancada vertical furando o bloqueio da linha média com aceleração máxima',
-    dominantMood: 'drible'
-  },
-  {
-    id: 'art-tackle-possession-recovery',
-    url: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['desarme', 'recuperação', 'bote', 'meio-campo', 'transição', 'combate'],
-    description: 'Bote preciso no meio-campo recuperando a bola para contra-ataque rápido',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'art-box-chaos-danger',
-    url: 'https://images.unsplash.com/photo-1577471488278-16eec37ffcc2?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['bate rebate', 'grande área', 'perigo', 'pressão', 'zaga', 'abafa'],
-    description: 'Tumulto e intensidade dramática na pequena área nos segundos finais',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'art-open-arms-celebration',
-    url: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=1200&q=80',
-    category: 'Jogadores',
-    tags: ['artilheiro', 'comemoração', 'abraço', 'braços abertos', 'êxtase', 'vibração'],
-    description: 'O artilheiro correndo em direção à arquibancada com os braços abertos',
-    dominantMood: 'celebração'
+    id: "art-historico-craque-brasil",
+    url: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=80",
+    category: "Jogadores",
+    tags: ["pelé", "pele", "1958", "ronaldinho", "santos", "história", "gênio", "mística", "arte mundial", "craques"],
+    description: "A clássica pelota de futebol no gramado sagrado simbolizando a gênese e a mística dos craques",
+    dominantMood: "estádio"
   },
 
-  // --- EQUIPE TÉCNICA: TREINADORES, PRANCHETAS, CT & PRELEÇÕES ---
+  // 2. EQUIPE TÉCNICA (Pranchetas, Treinadores, Ajustes Táticos e Performance)
   {
-    id: 'coach-sideline-gesturing-1',
-    url: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['artur jorge', 'técnico', 'beira do gramado', 'gesto', 'orientação', 'intensidade', 'jogo propositivo', 'comando'],
-    description: 'Comandante técnico orientando a equipe com postura enérgica na linha lateral',
-    dominantMood: 'tático'
+    id: "coach-abel-tactical-board",
+    url: "/images/brazil_tactical_board_coach_1792750182531.webp",
+    category: "Equipe Técnica",
+    tags: ["abel ferreira", "prancheta", "técnico", "nó tático", "orientação", "área técnica", "palmeiras", "comissão técnica", "estratégia"],
+    description: "Treinador à beira do gramado orientando o posicionamento tático com prancheta em punho",
+    dominantMood: "tático",
+    clubAffinity: "palmeiras"
   },
   {
-    id: 'coach-tactics-board-2',
-    url: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['prancheta', 'estratégia', 'intervalo', 'ajuste tático', 'filipe luís', 'leitura de jogo', 'desenho', 'esquema'],
-    description: 'Reunião tática com prancheta definindo marcação e transições rápidas',
-    dominantMood: 'tático'
+    id: "coach-artur-jorge-pressao",
+    url: "/images/brazil_tactical_board_coach_1792750182531.webp",
+    category: "Equipe Técnica",
+    tags: ["artur jorge", "botafogo", "pressão alta", "transição", "futebol corajoso", "metodologia", "treinador", "tática"],
+    description: "Artur Jorge comandando as linhas de pressão alta e instruindo o posicionamento ofensivo",
+    dominantMood: "tático",
+    clubAffinity: "botafogo"
   },
   {
-    id: 'coach-abel-ferreira-mental',
-    url: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['abel ferreira', 'mente fria', 'coração quente', 'competitividade', 'disciplina', 'liderança', 'palmeiras'],
-    description: 'Postura compenetrada e foco absoluto em decisões sob pressão extrema na área técnica',
-    dominantMood: 'tático',
-    clubAffinity: 'palmeiras'
+    id: "coach-filipe-luis-posicional",
+    url: "/images/brazil_tactical_board_coach_1792750182531.webp",
+    category: "Equipe Técnica",
+    tags: ["filipe luís", "filipe luis", "flamengo", "leitura cirúrgica", "jogo posicional", "vestiário", "ajuste tático", "comissão"],
+    description: "Filipe Luís ajustando a prancheta tática e orientando o desenho posicional da equipe",
+    dominantMood: "tático",
+    clubAffinity: "flamengo"
   },
   {
-    id: 'coach-portuguese-invasion',
-    url: 'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['invasao portuguesa', 'jorge jesus', 'posicional', 'metodologia', 'treinadores', 'escola europeia'],
-    description: 'Evolução conceitual das rotinas de treino e intensidade posicional',
-    dominantMood: 'tático'
+    id: "coach-dorival-formula-selecao",
+    url: "/images/brazil_tactical_board_coach_1792750182531.webp",
+    category: "Equipe Técnica",
+    tags: ["dorival júnior", "dorival junior", "seleção brasileira", "meio-campo", "fórmula", "comissão técnica", "granja comary"],
+    description: "Dorival Júnior em momento de refinamento tático à beira do campo com instruções decisivas",
+    dominantMood: "tático",
+    clubAffinity: "selecao"
   },
   {
-    id: 'coach-analytics-bigdata',
-    url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['big data', 'inteligencia de video', 'scouting', 'analise', 'gps', 'telemetria', 'dados'],
-    description: 'Telas analíticas e softwares de rastreamento mapeando cada sprint e mapa de calor',
-    dominantMood: 'tático'
+    id: "coach-zubeldia-raca-saopaulo",
+    url: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80",
+    category: "Equipe Técnica",
+    tags: ["luis zubeldía", "luis zubeldia", "são paulo", "raça", "beira do gramado", "copeiro", "espírito", "técnico"],
+    description: "Luis Zubeldía liderando a subida da equipe ao gramado do Morumbi com energia contagiante",
+    dominantMood: "tático",
+    clubAffinity: "saopaulo"
   },
   {
-    id: 'coach-physiology-science',
-    url: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['fisiologia', 'periodização', 'recuperação', 'ct', 'ciência', 'performance', 'nutrição'],
-    description: 'Termografia e controle fisiológico de alta precisão em centro de excelência moderna',
-    dominantMood: 'treino'
+    id: "coach-vojvoda-200-jogos-fortaleza",
+    url: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1200&q=80",
+    category: "Equipe Técnica",
+    tags: ["vojvoda", "fortaleza", "200 jogos", "castelão", "leão", "continuidade", "projeto", "banco"],
+    description: "A postura comandante de Vojvoda no banco de reservas do Castelão sob aplausos de 50 mil",
+    dominantMood: "tático",
+    clubAffinity: "fortaleza"
   },
   {
-    id: 'coach-psychology-lockerroom',
-    url: 'https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['saude mental', 'psicologia', 'vestiario', 'pressao', 'resiliencia', 'foco', 'blindagem'],
-    description: 'Roda de conversa e fortalecimento psicológico do elenco antes da decisão',
-    dominantMood: 'treino'
+    id: "coach-tactics-performance-training",
+    url: "/images/football_performance_training_1792750183558.webp",
+    category: "Equipe Técnica",
+    tags: ["ciência e prancheta", "departamento de performance", "carga física", "preparação", "ct", "treino", "recuperação", "gps", "fisiologia"],
+    description: "Atletas em treinamento de alta intensidade com cones e marcações táticas no centro de treinamento",
+    dominantMood: "treino"
   },
   {
-    id: 'coach-former-players-transition',
-    url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['transicao', 'ex-craques', 'licenca cbf', 'filipe luis', 'mentoria', 'coletiva'],
-    description: 'A ponte de vivência prática entre quem brilhou em campo e agora comanda a prancheta',
-    dominantMood: 'tático'
+    id: "coach-granja-comary-seminario",
+    url: "/images/brazil_tactical_board_coach_1792750182531.webp",
+    category: "Equipe Técnica",
+    tags: ["cúpula tática", "granja comary", "seminário cbf", "jogo posicional", "funcional", "debate", "choque"],
+    description: "Debate tático aprofundado com análise das linhas de passe e transição do futebol brasileiro",
+    dominantMood: "tático"
   },
   {
-    id: 'coach-pregame-strategy-briefing',
-    url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['preleção', 'liderança', 'estratégia', 'comissão', 'ajuste', 'prancheta'],
-    description: 'Preleção inflamada nos minutos finais antes dos jogadores subirem para o túnel',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'coach-training-physical-agility',
-    url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['preparação física', 'intensidade', 'ct', 'tiro curto', 'musculação', 'arranque'],
-    description: 'Preparação física de altíssima exigência preparando o elenco para o calendário',
-    dominantMood: 'treino'
-  },
-  {
-    id: 'coach-tactical-drills-cones',
-    url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['treino tático', 'cones', 'compactação', 'linhas', 'bloco médio', 'ct'],
-    description: 'Treino de compactação de linhas defensivas e coordenação de pressão em bloco',
-    dominantMood: 'treino'
-  },
-  {
-    id: 'coach-digital-tactics-scouting',
-    url: 'https://images.unsplash.com/photo-1516245834210-c4c142787335?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['scouting', 'análise digital', 'desempenho', 'vídeo', 'software', 'relatório'],
-    description: 'Departamento de scout destsecando minuciosamente padrões do oponente',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'coach-bench-celebration-passion',
-    url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['banco de reservas', 'comissão técnica', 'abraço', 'alívio', 'comemoração'],
-    description: 'Comissão técnica invadindo a beira do campo em explosão de alegria com gol salvador',
-    dominantMood: 'celebração'
-  },
-  {
-    id: 'coach-press-conference-spotlight',
-    url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['entrevista coletiva', 'sala de imprensa', 'declaração', 'bastidores', 'microfone'],
-    description: 'Entrevista coletiva concorrida de pós-jogo sob os holofotes da crônica esportiva',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'coach-boardroom-strategic-vision',
-    url: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80',
-    category: 'Equipe Técnica',
-    tags: ['gestão', 'diretoria', 'planejamento', 'saf', 'projeto', 'contratações'],
-    description: 'Reunião de cúpula entre comissão e diretoria definindo metas de curto e longo prazo',
-    dominantMood: 'tático'
+    id: "coach-intervalo-mudancas-3-2-5",
+    url: "/images/brazil_tactical_board_coach_1792750182531.webp",
+    category: "Equipe Técnica",
+    tags: ["guerra de pranchetas", "mudanças táticas", "intervalo", "3-2-5", "entrelinhas", "assimétrico", "decisão"],
+    description: "Intervenção tática cirúrgica com prancheta posicional reorganizando a estrutura da equipe",
+    dominantMood: "tático"
   },
 
-  // --- CLUBES SÉRIE A: CLÁSSICOS, ESTÁDIOS & IDENTIDADES ---
+  // 3. CLUBES SÉRIE A (Maracanã, MorumBIS, Neo Química Arena, Mineirão, Clássicos e Decisões)
   {
-    id: 'cla-derby-rivalry-flamengo-palmeiras',
-    url: 'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['flamengo', 'palmeiras', 'clássico', 'rivalidade', 'chamas', 'choque', 'derby', 'série a', 'título'],
-    description: 'Duelo centenário carregado de rivalidade, adrenalina e divididas quentes',
-    dominantMood: 'estádio',
-    clubAffinity: 'flamengo'
+    id: "cla-maracana-flamengo-palmeiras",
+    url: "/images/maracana_derby_stadium_action_1792750183212.webp",
+    category: "Clubes Serie A",
+    tags: ["flamengo", "palmeiras", "maracanã", "pressão", "liderança", "clássico", "brasileirão", "dividida"],
+    description: "Dividida feroz no gramado do Maracanã em ebulição no choque pela liderança da Série A",
+    dominantMood: "estádio",
+    clubAffinity: "flamengo"
   },
   {
-    id: 'cla-saopaulo-morumbi-stadium',
-    url: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['são paulo', 'morumbi', 'tricolor', 'soberano', 'caldeirão', 'morumbis', 'lucas moura'],
-    description: 'O colosso de concreto iluminado recebendo a multidão tricolor no Morumbi',
-    dominantMood: 'estádio',
-    clubAffinity: 'saopaulo'
+    id: "cla-botafogo-bahia-fonte-nova",
+    url: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie A",
+    tags: ["botafogo", "luiz henrique", "fonte nova", "bahia", "pintura", "arrancada", "glorioso"],
+    description: "A chuteira cravada e a finalização com curva na arrancada triunfal do Botafogo",
+    dominantMood: "drible",
+    clubAffinity: "botafogo"
   },
   {
-    id: 'cla-corinthians-fiel-arena',
-    url: 'https://images.unsplash.com/photo-1486286701208-1d58e9338013?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['corinthians', 'fiel', 'itacquera', 'neo química', 'timão', 'alvinegro', 'depay'],
-    description: 'A energia vibrante e o apoio incessante da torcida alvinegra em Itaquera',
-    dominantMood: 'estádio',
-    clubAffinity: 'corinthians'
+    id: "cla-morumbis-saopaulo-gremio",
+    url: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie A",
+    tags: ["são paulo", "morumbi", "morumbis", "grêmio", "caldeirão", "tricolor", "g4", "lucas moura"],
+    description: "O colosso iluminado do MorumBIS e a postura dominante do São Paulo dentro de campo",
+    dominantMood: "estádio",
+    clubAffinity: "saopaulo"
   },
   {
-    id: 'cla-cruzeiro-mineirao-lights',
-    url: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['cruzeiro', 'mineirão', 'raposa', 'celeste', 'belo horizonte', 'saf', 'diniz'],
-    description: 'Noite de gala sob as arquibancadas imponentes do Mineirão azul',
-    dominantMood: 'estádio',
-    clubAffinity: 'cruzeiro'
+    id: "cla-arenamrv-atleticomg-cruzeiro",
+    url: "/images/maracana_derby_stadium_action_1792750183212.webp",
+    category: "Clubes Serie A",
+    tags: ["atlético-mg", "cruzeiro", "arena mrv", "paulinho", "clássico mineiro", "explosão", "derby", "massa"],
+    description: "Disputa eletrizante e choque de titãs na Arena MRV comemoração apoteótica no final",
+    dominantMood: "estádio",
+    clubAffinity: "atleticomg"
   },
   {
-    id: 'cla-atleticomg-arenamrv-duel',
-    url: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['atlético-mg', 'galo', 'arena mrv', 'hulk', 'alvinegro', 'belo horizonte', 'scarpa'],
-    description: 'O pulsar da Massa Atleticana e a força física na moderna Arena MRV',
-    dominantMood: 'estádio',
-    clubAffinity: 'atleticomg'
+    id: "cla-corinthians-garro-vasco",
+    url: "https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie A",
+    tags: ["corinthians", "rodrigo garro", "são januário", "vasco", "golaço", "falta", "dois gols", "fiel"],
+    description: "A bola explodindo no ângulo das redes de São Januário na noite mágica de Rodrigo Garro",
+    dominantMood: "celebração",
+    clubAffinity: "corinthians"
   },
   {
-    id: 'cla-botafogo-nilton-santos-fogo',
-    url: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['botafogo', 'glorioso', 'nilton santos', 'estrela solitária', 'artur jorge', 'saf'],
-    description: 'Os refletores cortando a noite no Nilton Santos com o Glorioso no ataque',
-    dominantMood: 'estádio',
-    clubAffinity: 'botafogo'
+    id: "cla-fortaleza-internacional-castelao",
+    url: "https://images.unsplash.com/photo-1568194157720-8bbe7114ebe8?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie A",
+    tags: ["fortaleza", "internacional", "castelão", "leão", "libertadores", "festa", "torcida"],
+    description: "As arquibancadas do Castelão em festa vibrante empurrando o Fortaleza à vitória",
+    dominantMood: "estádio",
+    clubAffinity: "fortaleza"
   },
   {
-    id: 'cla-center-circle-opening-round',
-    url: 'https://images.unsplash.com/photo-1508807526345-15e9b5f4eaff?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['brasileirão', 'rodada', 'apito inicial', 'círculo central', 'clássico', 'tabela'],
-    description: 'O início de mais um confronto eletrizante de Série A nos gramados nacionais',
-    dominantMood: 'estádio'
+    id: "cla-mineirao-cruzeiro-massa",
+    url: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie A",
+    tags: ["cruzeiro", "mineirão", "ritmo eletrizante", "torcida celeste", "massa azul", "raposa"],
+    description: "A pelota oficial no gramado sagrado do Mineirão sob a vibração contagiante da torcida",
+    dominantMood: "estádio",
+    clubAffinity: "cruzeiro"
   },
   {
-    id: 'cla-matchday-street-passion',
-    url: 'https://images.unsplash.com/photo-1563299796-17596ed6b017?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['dia de jogo', 'rua', 'festa', 'torcedores', 'maracanã', 'avenida', 'paixão'],
-    description: 'A celebração popular e a atmosfera contagiante no entorno do estádio',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'cla-corner-kick-injury-time',
-    url: 'https://images.unsplash.com/photo-1589487391730-58f20eb2c308?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['escanteio', 'bola parada', 'área cheia', 'acréscimos', 'tensão', 'empate'],
-    description: 'Tensão máxima na cobrança de escanteio nos acréscimos do clássico',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'cla-sunset-stadium-pregame',
-    url: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['pôr do sol', 'ouro', 'estádio', 'clássico', 'atmosfera', 'espetáculo'],
-    description: 'Pôr do sol dourado tingindo a cobertura da arena antes da rodada começar',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'cla-stadium-roof-night-glow',
-    url: 'https://images.unsplash.com/photo-1550881111-7cfde14b8073?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie A',
-    tags: ['arena', 'arquitetura', 'maracanã', 'morumbis', 'modernidade', 'luzes'],
-    description: 'A imponente silhueta da arena contra o céu noturno brilhando em holofotes',
-    dominantMood: 'estádio'
+    id: "cla-flamengo-historia-maracana",
+    url: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie A",
+    tags: ["flamengo", "história completa", "maracanã", "fundação", "rubro-negro", "massa"],
+    description: "O Maracanã transbordando com a paixão incondicional da torcida rubro-negra",
+    dominantMood: "estádio",
+    clubAffinity: "flamengo"
   },
 
-  // --- CLUBES SÉRIE B: ACESSO, VILA BELMIRO, RAÇA, ILHA DO RETIRO & CALDEIRÕES ---
+  // 4. CLUBES SÉRIE B (Vila Belmiro, Caldeirões, Acesso, Raça e Dérbi)
   {
-    id: 'clb-santos-vilabelmiro-legend',
-    url: 'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['santos', 'vila belmiro', 'peixe', 'reconstrução', 'alvinegro praiano', 'retorno à elite', 'alçapão'],
-    description: 'A mística histórica do Alvinegro Praiano no caldeirão da Vila Belmiro',
-    dominantMood: 'tático',
-    clubAffinity: 'santos'
+    id: "clb-santos-vila-belmiro",
+    url: "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["santos", "vila belmiro", "américa-mg", "peixe", "alçapão", "acesso", "retorno", "torcida"],
+    description: "A mística da Vila Belmiro pulsando com a torcida alvinegra empurrando o Peixe ao acesso",
+    dominantMood: "estádio",
+    clubAffinity: "santos"
   },
   {
-    id: 'clb-rain-floodlights-mud',
-    url: 'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['guerra pelo acesso', 'série b', 'raça', 'chuva', 'refletores', 'batalha', 'física', 'lama'],
-    description: 'Gramado sob chuva fina e refletores em duelo duríssimo de Série B',
-    dominantMood: 'estádio'
+    id: "clb-novorizontino-sport-ilha",
+    url: "https://images.unsplash.com/photo-1524015368236-bbf6f72545b6?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["novorizontino", "sport", "ilha do retiro", "sensação do interior", "liderança", "disciplina", "série b"],
+    description: "A bola em jogo no gramado encharcado na vitória corajosa do Novorizontino fora de casa",
+    dominantMood: "tático",
+    clubAffinity: "novorizontino"
   },
   {
-    id: 'clb-sport-recife-ilhadoretiro-heat',
-    url: 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['sport recife', 'ilha do retiro', 'leão da ilha', 'nordeste', 'pressão', 'acesso', 'rubro-negro'],
-    description: 'O calor da torcida rubro-negra fervendo a Ilha do Retiro rumo à elite',
-    dominantMood: 'estádio',
-    clubAffinity: 'sport'
+    id: "clb-ceara-castelao-55mil",
+    url: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["ceará", "castelão", "55 mil", "paysandu", "mar negro e branco", "g4", "festa", "acesso"],
+    description: "Mais de 55 mil apaixonados criando um verdadeiro mar alvinegro no Castelão",
+    dominantMood: "estádio",
+    clubAffinity: "ceara"
   },
   {
-    id: 'clb-ceara-castelao-crowd',
-    url: 'https://images.unsplash.com/photo-1568194157720-8bbe7114ebe8?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['ceará', 'vozao', 'castelão', 'fortaleza', 'nordeste', 'acesso', 'alvinegro'],
-    description: 'A voz ensurdecedora da torcida alvinegra empurrando o time no Castelão',
-    dominantMood: 'estádio',
-    clubAffinity: 'ceara'
+    id: "clb-vila-nova-oba-coritiba",
+    url: "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["vila nova", "coritiba", "oba", "49 do segundo tempo", "catarse", "gol no fim", "acesso"],
+    description: "A rede balançando aos 49 minutos do segundo tempo e a explosão de alegria no OBA",
+    dominantMood: "celebração",
+    clubAffinity: "vilanova"
   },
   {
-    id: 'clb-coritiba-greenhell-couto',
-    url: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['coritiba', 'coxa', 'couto pereira', 'curitiba', 'alviverde', 'tradição', 'green hell'],
-    description: 'O espetáculo do Green Hell acendendo as arquibancadas do Couto Pereira',
-    dominantMood: 'estádio',
-    clubAffinity: 'coritiba'
+    id: "clb-operario-serrinha-goias",
+    url: "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["operário-pr", "goiás", "serrinha", "virada histórica", "raça", "batalha", "acesso"],
+    description: "Disputa com chuteiras no gramado verde em virada histórica no coração do Cerrado",
+    dominantMood: "tático",
+    clubAffinity: "operario"
   },
   {
-    id: 'clb-interior-novorizontino-mirassol',
-    url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['novorizontino', 'mirassol', 'interior', 'organização', 'pressão', 'tática', 'g4'],
-    description: 'A força tática e organização cirúrgica dos clubes do interior na briga pelo acesso',
-    dominantMood: 'tático'
+    id: "clb-guarani-ponte-preta-derbi",
+    url: "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["guarani", "ponte preta", "dérbi campineiro", "moisés lucarelli", "brinco de ouro", "rivalidade", "sobrevivência"],
+    description: "A bandeirinha de escanteio e a tensão de cada metro disputado no centenário Dérbi Campineiro",
+    dominantMood: "tático"
   },
   {
-    id: 'clb-midfield-duel-clash',
-    url: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['dividida', 'meio de campo', 'vigor', 'marcação', 'duelo', 'segunda divisão'],
-    description: 'Disputa feroz pela posse na faixa central com divididas duras e honestas',
-    dominantMood: 'tático'
-  },
-  {
-    id: 'clb-cold-rain-stadium-fight',
-    url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1200&q=80',
-    category: 'Clubes Serie B',
-    tags: ['garoa', 'frio', 'sul', 'operario', 'chapecoense', 'batalha', 'pontos'],
-    description: 'Confronto sob neblina e garoa fina testando o preparo e a garra dos atletas',
-    dominantMood: 'estádio'
+    id: "clb-serie-b-fisica-disputada",
+    url: "https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=1200&q=80",
+    category: "Clubes Serie B",
+    tags: ["física da segunda divisão", "série b", "campeonatos disputados", "dividida", "combate", "raça"],
+    description: "Intensidade máxima nas divididas no gramado ilustrando o equilíbrio férreo da Série B",
+    dominantMood: "tático"
   },
 
-  // --- SELEÇÃO BRASILEIRA: CAMISA AMARELA, GRANJA COMARY & ELIMINATÓRIAS ---
+  // 5. SELEÇÃO BRASILEIRA (Canarinho, Eliminatórias, Superclássico e Rumo ao Hexa)
   {
-    id: 'sel-lockerroom-huddle-unity',
-    url: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
-    category: 'Seleção Brasileira',
-    tags: ['liderança', 'vestiário', 'seleção', 'amarelinha', 'braçadeira', 'união', 'dorival'],
-    description: 'Maturidade de vestiário e liderança compartilhada na concentração canarinho',
-    dominantMood: 'treino',
-    clubAffinity: 'selecao'
+    id: "sel-vini-fonte-nova-uruguai",
+    url: "/images/brazilian_wonderkid_dribble_1792750181934.webp",
+    category: "Seleção Brasileira",
+    tags: ["seleção brasileira", "vini jr", "uruguai", "fonte nova", "eliminatórias", "liderança", "drible", "magia"],
+    description: "Vinicius Júnior bailando na ponta esquerda e comandando a grande vitória na Fonte Nova",
+    dominantMood: "drible",
+    clubAffinity: "selecao"
   },
   {
-    id: 'sel-altitude-eliminatorias-hostile',
-    url: 'https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=1200&q=80',
-    category: 'Seleção Brasileira',
-    tags: ['eliminatórias', 'altitude', 'la paz', 'conmebol', 'desafio', 'pressão', 'uruguai', 'colômbia'],
-    description: 'O ar rarefeito e o desafio geográfico hostil das eliminatórias continentais',
-    dominantMood: 'estádio',
-    clubAffinity: 'selecao'
+    id: "sel-meio-campo-barranquilla-colombia",
+    url: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=1200&q=80",
+    category: "Seleção Brasileira",
+    tags: ["seleção brasileira", "colômbia", "barranquilla", "aula tática", "meio-campo", "dorival júnior", "eliminatórias"],
+    description: "O meio-campo brasileiro quebrando as linhas de marcação com autoridade em Barranquilla",
+    dominantMood: "tático",
+    clubAffinity: "selecao"
   },
   {
-    id: 'sel-pregame-focus-flag-hymn',
-    url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80',
-    category: 'Seleção Brasileira',
-    tags: ['hino nacional', 'brasil', 'foco', 'olhos fechados', 'amarelinha', 'coração'],
-    description: 'A emoção patriótica dos jogadores perfilados durante o hino nacional',
-    dominantMood: 'treino',
-    clubAffinity: 'selecao'
+    id: "sel-chile-alas-goleada",
+    url: "/images/brazilian_wonderkid_dribble_1792750181934.webp",
+    category: "Seleção Brasileira",
+    tags: ["seleção brasileira", "chile", "alas ofensivos", "goleada", "furacão", "velocidade", "pontas"],
+    description: "Aceleração fulminante dos alas ofensivos da Seleção desmontando o ferrolho adversário",
+    dominantMood: "drible",
+    clubAffinity: "selecao"
   },
   {
-    id: 'sel-tunnel-stadium-walk',
-    url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
-    category: 'Seleção Brasileira',
-    tags: ['túnel', 'entrada', 'gramado', 'seleção', 'maracanã', 'brasil'],
-    description: 'Passada firme pelo túnel de acesso rumo ao gramado lotado do Maracanã',
-    dominantMood: 'estádio',
-    clubAffinity: 'selecao'
+    id: "sel-maracana-argentina-guerra",
+    url: "/images/maracana_derby_stadium_action_1792750183212.webp",
+    category: "Seleção Brasileira",
+    tags: ["brasil x argentina", "superclássico", "maracanã", "guerra", "raça", "defesa impenetrável", "maior clássico"],
+    description: "Dividida feroz no clássico mais quente do planeta no Maracanã com arquibancadas incendiadas",
+    dominantMood: "tático",
+    clubAffinity: "selecao"
   },
   {
-    id: 'sel-focus-corridor-destiny',
-    url: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=1200&q=80',
-    category: 'Seleção Brasileira',
-    tags: ['corredor', 'vestiário', 'rumo ao campo', 'brasil', 'eliminatórias'],
-    description: 'Foco e determinação nos instantes decisivos que antecedem o grande clássico',
-    dominantMood: 'tático',
-    clubAffinity: 'selecao'
+    id: "sel-camisa9-hat-trick-paraguai",
+    url: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=80",
+    category: "Seleção Brasileira",
+    tags: ["seleção brasileira", "camisa 9", "hat-trick", "paraguai", "goleada", "nova geração", "show"],
+    description: "O artilheiro camisa 9 da Seleção comemorando o terceiro gol na grande goleada",
+    dominantMood: "celebração",
+    clubAffinity: "selecao"
+  },
+  {
+    id: "sel-bolivia-altitude-la-paz",
+    url: "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?auto=format&fit=crop&w=1200&q=80",
+    category: "Seleção Brasileira",
+    tags: ["seleção brasileira", "bolívia", "la paz", "altitude", "3.600 metros", "heroísmo", "passaporte"],
+    description: "A bola no gramado do Hernando Siles sob o ar rarefeito e o desafio heroico da altitude",
+    dominantMood: "estádio",
+    clubAffinity: "selecao"
   },
 
-  // --- EVENTOS: COPA LIBERTADORES, COPA DO MUNDO, COPA DO BRASIL & GRANDES FINAIS ---
+  // 6. EVENTOS (Libertadores, Copa do Brasil, Super Mundial FIFA, Supercopa Rei e Públicos)
   {
-    id: 'eve-libertadores-night-flares',
-    url: 'https://images.unsplash.com/photo-1511886929837-354d827aae26?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['libertadores', 'glória eterna', 'noite de copa', 'sinalizadores', 'finais', 'conmebol', 'caldeirão'],
-    description: 'Noite mágica de Copa Libertadores com arquibancada em chamas e festa inesquecível',
-    dominantMood: 'copa'
+    id: "eve-libertadores-botafogo-atleticomg",
+    url: "/images/copa_libertadores_glory_trophy_1792750184172.webp",
+    category: "Eventos",
+    tags: ["copa libertadores", "glória eterna", "botafogo", "atlético-mg", "final", "decisão", "troféu", "campeões"],
+    description: "A glória eterna do troféu da Copa Libertadores e a apoteose dos campeões no gramado",
+    dominantMood: "copa"
   },
   {
-    id: 'eve-world-cup-2026-arenas',
-    url: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['copa do mundo', '2026', 'arenas', 'fifa', 'mundial', 'hexa', 'tripartite'],
-    description: 'Arquitetura monumental das novas superarenas da Copa do Mundo',
-    dominantMood: 'copa'
+    id: "eve-copa-do-brasil-flamengo-atleticomg",
+    url: "/images/copa_libertadores_glory_trophy_1792750184172.webp",
+    category: "Eventos",
+    tags: ["copa do brasil", "flamengo", "atlético-mg", "73 milhões", "111 milhões", "decisão", "troféu", "campeão"],
+    description: "A taça monumental da Copa do Brasil erguida com confetes dourados e a catarse do título",
+    dominantMood: "copa"
   },
   {
-    id: 'eve-super-mundial-clubes-fifa',
-    url: 'https://images.unsplash.com/photo-1552667466-07770ae110d0?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['super mundial', 'mundial de clubes', 'fifa 2025', 'elite mundial', 'glória', 'flamengo', 'palmeiras', 'fluminense'],
-    description: 'O palco supremo do futebol mundial onde clubes brasileiros desafiam os gigantes europeus',
-    dominantMood: 'copa'
+    id: "eve-super-mundial-fifa-2025",
+    url: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1200&q=80",
+    category: "Eventos",
+    tags: ["super mundial", "fifa 2025", "estados unidos", "4 gigantes", "arena", "palco mundial", "mundial de clubes"],
+    description: "Visão monumental da superarena do Mundial de Clubes da FIFA recebendo os gigantes brasileiros",
+    dominantMood: "copa"
   },
   {
-    id: 'eve-copa-do-brasil-silver-trophy',
-    url: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['copa do brasil', 'mata-mata', 'troféu', 'campeão', 'sorteios', 'chaveamento', 'zebra', 'premiação'],
-    description: 'A cobiçada taça de prata e a consagração no torneio mais emocionante do país',
-    dominantMood: 'copa'
+    id: "eve-cruzeiro-sulamericana-lanus",
+    url: "https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&w=1200&q=80",
+    category: "Eventos",
+    tags: ["cruzeiro", "lanús", "sul-americana", "assunção", "mística celeste", "final", "decisão"],
+    description: "A bola rolando na noite épica de classificação internacional do Cruzeiro em Assunção",
+    dominantMood: "copa",
+    clubAffinity: "cruzeiro"
   },
   {
-    id: 'eve-torcida-mosaico-arquibancada',
-    url: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['cultura de arquibancada', 'mosaico', 'festa', 'torcedores', 'público recorde', 'festa popular'],
-    description: 'Mosaico monumental 3D transformando as arquibancadas em obra viva de devoção',
-    dominantMood: 'estádio'
+    id: "eve-copa-2026-sonho-do-hexa",
+    url: "https://images.unsplash.com/photo-1511886929837-354d827aae26?auto=format&fit=crop&w=1200&q=80",
+    category: "Eventos",
+    tags: ["copa do mundo", "2026", "sonho do hexa", "fifa", "trave", "estádio iluminado", "contagem regressiva"],
+    description: "O palco sagrado das grandes decisões do futebol mundial e a busca obstinada pelo Hexa",
+    dominantMood: "copa"
   },
   {
-    id: 'eve-transfer-market-corporate',
-    url: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['janela de transferências', 'mercado da bola', 'milionárias', 'contratações', 'reforços', 'negociação'],
-    description: 'Planejamento executivo e movimentações decisivas no mercado da bola',
-    dominantMood: 'tático'
+    id: "eve-brasileirao-recorde-publico",
+    url: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&w=1200&q=80",
+    category: "Eventos",
+    tags: ["brasileirão", "recorde de público", "arquibancada", "estádios lotados", "festa", "torcida", "febre"],
+    description: "A torcida brasileira em festa arrebatadora celebrando o recorde histórico de público nos estádios",
+    dominantMood: "estádio"
   },
   {
-    id: 'eve-lanterns-night-sea-fans',
-    url: 'https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['mar de luzes', 'celulares', 'espetáculo', 'abertura', 'noite', 'festa'],
-    description: 'Milhares de lanternas acesas criando constelação viva nas arquibancadas',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-pyro-smoke-passion-grandstand',
-    url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['fumaça', 'sinalizador', 'caldeirão', 'festa', 'fervo', 'ruas'],
-    description: 'Cortina vermelha e dourada de fumaça na recepção histórica do time na chegada ao estádio',
-    dominantMood: 'copa'
-  },
-  {
-    id: 'eve-championship-confetti-explosion',
-    url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['título', 'confetes', 'chuva de prata', 'festa', 'glória', 'pódio'],
-    description: 'Chuva apoteótica de papel prateado no instante em que a taça é erguida',
-    dominantMood: 'copa'
-  },
-  {
-    id: 'eve-fans-chanting-terrace',
-    url: 'https://images.unsplash.com/photo-1512719994953-eabf50895df7?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['bateria', 'cantos', 'arquibancada', 'setor popular', 'paixão', 'torcida'],
-    description: 'Bateria incansável e multidão cantando sem parar nos noventa minutos',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-light-show-final-ceremony',
-    url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['cerimônia', 'luzes', 'show', 'final de campeonato', 'espetáculo', 'lasers'],
-    description: 'Show de luzes e pirotecnia de padrão internacional na abertura da grande final',
-    dominantMood: 'copa'
-  },
-  {
-    id: 'eve-flares-reception-bus',
-    url: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['ruas de fogo', 'recepção', 'ônibus', 'corredor', 'chamas', 'apoio'],
-    description: 'Corredor de fogo pelas avenidas na chegada da delegação para a grande decisão',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-fans-jumping-terrace-unison',
-    url: 'https://images.unsplash.com/photo-1499364615650-ec38552f4f34?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['pula sai do chão', 'catarse', 'arquibancada', 'vibração', 'torcida'],
-    description: 'Catarse coletiva com todo o setor popular pulando e balançando as estruturas da arena',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-roaring-terrace-fever',
-    url: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['bandeirões', 'mar de braços', 'grito de gol', 'catarse', 'futebol'],
-    description: 'Mar de braços erguidos e bandeirões gigantes saudando o gol da vitória',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-final-whistle-euphoria',
-    url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['apito final', 'é campeão', 'euforia', 'catarse', 'festa', 'glória'],
-    description: 'A explosão incontida ao soar do apito final selando o título da temporada',
-    dominantMood: 'copa'
-  },
-  {
-    id: 'eve-trophy-lift-on-pitch',
-    url: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['taça', 'levantar troféu', 'capitão', 'festa do título', 'campeão'],
-    description: 'O capitão erguendo o troféu de campeão sob chuva de papéis coloridos e chamas',
-    dominantMood: 'copa'
-  },
-  {
-    id: 'eve-stadium-night-spectacular-illumination',
-    url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['iluminação', 'refletores', 'espetáculo', 'noite de gala', 'futebol'],
-    description: 'Espetáculo de iluminação cortando a noite de decisão na arena lotada',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-youth-energy-stadium',
-    url: 'https://images.unsplash.com/photo-1496337589254-7e19d01cec44?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['juventude', 'festa', 'arquibancada', 'torcida jovem', 'canto'],
-    description: 'A energia vibrante da juventude renovando o amor incondicional pelo clube',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-chants-echoing-concrete',
-    url: 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['eco', 'cantos', 'concreto', 'estádio', 'paixão', 'torcedores'],
-    description: 'Os coros da arquibancada ecoando pelo concreto e arrepiando quem está presente',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-pure-championship-energy',
-    url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['energia', 'vibração', 'decisão', 'campeonato', 'adrenalina'],
-    description: 'Adrenalina pura nos minutos que antecedem o início do jogo do ano',
-    dominantMood: 'copa'
-  },
-  {
-    id: 'eve-sector-north-unison',
-    url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['setor norte', 'uníssono', 'massa', 'fiel', 'torcida', 'arquibancada'],
-    description: 'Setor popular cantando em uníssono fazendo o chão tremer',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-floodlights-night-pure',
-    url: 'https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['noite de futebol', 'refletores', 'atmosfera', 'espetáculo', 'iluminação'],
-    description: 'Luzes dramáticas cortando a névoa da arena antes do apito final',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-aerial-arena-panorama',
-    url: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['vista aérea', 'arquitetura', 'arena moderna', 'cidade', 'espetáculo'],
-    description: 'Visão panorâmica da arena pulsando luz no coração da metrópole',
-    dominantMood: 'estádio'
-  },
-  {
-    id: 'eve-trophy-celebration-fans',
-    url: 'https://images.unsplash.com/photo-1528722828814-77b9b83aafb2?auto=format&fit=crop&w=1200&q=80',
-    category: 'Eventos',
-    tags: ['campeão', 'festa do título', 'confetes', 'volta olímpica', 'troféu'],
-    description: 'A explosão de confetes e a celebração inesquecível da conquista com a torcida',
-    dominantMood: 'copa'
+    id: "eve-supercopa-rei-abertura",
+    url: "/images/copa_libertadores_glory_trophy_1792750184172.webp",
+    category: "Eventos",
+    tags: ["supercopa rei", "supercopa", "abertura da temporada", "decisão", "troféu", "inaugura"],
+    description: "O troféu da Supercopa Rei e o confronto supremo inaugurando a temporada nacional",
+    dominantMood: "copa"
   }
 ];
 
@@ -1100,48 +910,126 @@ export function getUniqueThematicImageForPost(
 
   const combinedText = normalizeText(`${title} ${summary} ${category} ${fullContent ? fullContent.slice(0, 800) : ''}`);
 
+  // Função unificada de pontuação semântica profunda para harmonia editorial absoluta
+  const calculateThematicScore = (item: ThematicImageDescriptor): number => {
+    let score = 0;
+
+    // 1. Afinidade de Categoria
+    if (normalizeText(item.category) === normalizeText(category)) {
+      score += 35;
+    }
+
+    // 2. Afinidade de Mood Conceitual
+    if (item.dominantMood === concept.dominantMood) {
+      score += 30;
+    }
+
+    // 3. Afinidade de Clube / Entidade
+    if (item.clubAffinity && combinedText.includes(normalizeText(item.clubAffinity))) {
+      score += 70;
+    }
+
+    // 4. SUPER-BOOST: Fisiologia Esportiva, Performance, Lesões e CT (Ciência & Rendimento)
+    const isPerformanceTopic = 
+      combinedText.includes('fisiologia') || 
+      combinedText.includes('departamento de performance') || 
+      combinedText.includes('departamentos de performance') || 
+      combinedText.includes('departamento medico') || 
+      combinedText.includes('departamentos medicos') || 
+      combinedText.includes('carga fisica') || 
+      combinedText.includes('prevencao de lesoes') ||
+      combinedText.includes('ciencia e prancheta') ||
+      (combinedText.includes('performance') && (combinedText.includes('lesoes') || combinedText.includes('blindam') || combinedText.includes('atletas')));
+    if (isPerformanceTopic && (item.id.includes('performance') || item.id.includes('training'))) {
+      score += 130;
+    }
+
+    // 5. SUPER-BOOST: Wonderkids, Drible, Jóias & Estêvão (Desequilíbrio e Velocidade)
+    if (
+      (combinedText.includes('estevao') || combinedText.includes('joia') || combinedText.includes('wonderkid') || combinedText.includes('revelacao') || combinedText.includes('drible') || combinedText.includes('safra')) &&
+      (item.id.includes('wonderkid') || item.id.includes('dribble') || item.id.includes('winger'))
+    ) {
+      score += 110;
+    }
+
+    // 6. SUPER-BOOST: Vini Jr & Pontas de Velocidade (Padrão Mundial)
+    if (
+      (combinedText.includes('vini jr') || combinedText.includes('vinicius junior')) &&
+      item.id.includes('vini')
+    ) {
+      score += 120;
+    }
+
+    // 7. SUPER-BOOST: Centroavantes, Igor Jesus, Camisa 9, Cabeceio, Artilheiro & Gols
+    if (
+      (combinedText.includes('centroavante') || combinedText.includes('igor jesus') || combinedText.includes('camisa 9') || combinedText.includes('artilheiro') || combinedText.includes('cabeceio') || combinedText.includes('faro de gol')) &&
+      (item.id.includes('striker') || item.tags.includes('centroavante') || item.tags.includes('igor jesus') || item.tags.includes('cabeceio') || item.tags.includes('camisa 9'))
+    ) {
+      score += 140;
+    }
+
+    // 8. SUPER-BOOST: Camisas 10, Meio-Campo Clássico, Maestria, Armador & Visão de Jogo
+    if (
+      (combinedText.includes('camisa 10') || combinedText.includes('maestria') || combinedText.includes('armador') || combinedText.includes('meio-campo') || combinedText.includes('maestro') || combinedText.includes('visao de jogo')) &&
+      (item.id.includes('playmaker') || item.tags.includes('camisa 10') || item.tags.includes('maestria') || item.tags.includes('meio-campo'))
+    ) {
+      score += 130;
+    }
+
+    // 9. SUPER-BOOST: Treinadores, Pranchetas e Análise Tática
+    if (
+      (combinedText.includes('prancheta') || combinedText.includes('tatica') || combinedText.includes('treinador') || combinedText.includes('tecnico') || combinedText.includes('abel ferreira') || combinedText.includes('artur jorge') || combinedText.includes('filipe luis') || combinedText.includes('dorival') || combinedText.includes('zubeldia') || combinedText.includes('vojvoda') || combinedText.includes('3-2-5') || combinedText.includes('posicional')) &&
+      (item.id.includes('coach') || item.id.includes('board') || item.dominantMood === 'tático')
+    ) {
+      score += 95;
+    }
+
+    // 10. SUPER-BOOST: Copas, Troféus, Sorteios e Finais (Libertadores, Copa do Brasil, Supercopa Rei, Mundial)
+    if (
+      (combinedText.includes('copa') || combinedText.includes('libertadores') || combinedText.includes('trofeu') || combinedText.includes('taca') || combinedText.includes('final') || combinedText.includes('campeao') || combinedText.includes('supercopa') || combinedText.includes('mundial de clubes') || combinedText.includes('sorteios') || combinedText.includes('chaveamentos')) &&
+      (item.id.includes('eve-') || item.dominantMood === 'copa')
+    ) {
+      score += 110;
+    }
+
+    // 11. SUPER-BOOST: Clássicos, Dérbis e Choques de Rivalidade (Maracanã, Mineirão, Arena MRV)
+    if (
+      (combinedText.includes('classico') || combinedText.includes('derbi') || combinedText.includes('rivalidade') || combinedText.includes('maracana') || combinedText.includes('dividida') || combinedText.includes('caldeirao')) &&
+      (item.id.includes('derby') || item.id.includes('maracana') || item.id.includes('action') || item.id.includes('cla-'))
+    ) {
+      score += 85;
+    }
+
+    // 11. Bônus por tags coincidentes
+    for (const tag of item.tags) {
+      const normTag = normalizeText(tag);
+      if (combinedText.includes(normTag)) {
+        score += 20;
+      }
+    }
+
+    // 12. Bônus por palavras-chave dramáticas
+    const highAppealKeywords = ['gol', 'golaco', 'virada', 'hat-trick', 'drible', 'maracana', 'caldeirao', 'sinalizador', 'taca', 'penalti', 'acesso', 'derby', 'classico', 'libertadores'];
+    for (const kw of highAppealKeywords) {
+      if (combinedText.includes(kw) && item.tags.some(t => normalizeText(t).includes(kw))) {
+        score += 25;
+      }
+    }
+
+    return score;
+  };
+
   // 1. Filtra e pontua imagens da biblioteca que AINDA NÃO FORAM USADAS
   const scoredCandidates = THEMATIC_IMAGE_LIBRARY
     .filter((item) => {
+      if (isDeprecatedNonFootballUrl(item.url)) return false;
       const base = getBaseImageUrl(item.url);
       return !usedBaseSet.has(base);
     })
-    .map((item) => {
-      let score = 0;
-
-      // Afinidade com categoria
-      if (normalizeText(item.category) === normalizeText(category)) {
-        score += 35;
-      }
-
-      // Afinidade com mood conceitual
-      if (item.dominantMood === concept.dominantMood) {
-        score += 30;
-      }
-
-      // Afinidade com o clube detectado
-      if (item.clubAffinity && combinedText.includes(normalizeText(item.clubAffinity))) {
-        score += 60;
-      }
-
-      // Bônus por tags coincidentes
-      for (const tag of item.tags) {
-        const normTag = normalizeText(tag);
-        if (combinedText.includes(normTag)) {
-          score += 18;
-        }
-      }
-
-      // Bônus de alta atratividade para termos dramáticos do futebol
-      const highAppealKeywords = ['gol', 'golaco', 'virada', 'hat-trick', 'drible', 'maracana', 'caldeirao', 'sinalizador', 'taca', 'penalti', 'acesso', 'derby', 'classico', 'libertadores'];
-      for (const kw of highAppealKeywords) {
-        if (combinedText.includes(kw) && item.tags.some(t => normalizeText(t).includes(kw))) {
-          score += 25;
-        }
-      }
-
-      return { item, score };
-    });
+    .map((item) => ({
+      item,
+      score: calculateThematicScore(item)
+    }));
 
   // 2. Se houver candidatos fotográficos não usados, escolhe o de maior pontuação
   if (scoredCandidates.length > 0) {
@@ -1163,18 +1051,15 @@ export function getUniqueThematicImageForPost(
     };
   }
 
-  // 3. Se todas as 86 fotos da biblioteca já tiverem sido consumidas, reutiliza a melhor pontuada com seed única
-  // para evitar queda abrupta para SVG em grades editoriais massivas
-  const allScored = THEMATIC_IMAGE_LIBRARY.map((item) => {
-    let score = 0;
-    if (normalizeText(item.category) === normalizeText(category)) score += 30;
-    if (item.dominantMood === concept.dominantMood) score += 25;
-    if (item.clubAffinity && combinedText.includes(normalizeText(item.clubAffinity))) score += 50;
-    for (const tag of item.tags) {
-      if (combinedText.includes(normalizeText(tag))) score += 15;
-    }
-    return { item, score };
-  }).sort((a, b) => b.score - a.score);
+  // 3. Se todas as fotos da biblioteca já tiverem sido consumidas, reutiliza a melhor pontuada com seed única
+  // para evitar queda abrupta para SVG em grades editoriais massivas (filtrando estritamente fotos válidas)
+  const allScored = THEMATIC_IMAGE_LIBRARY
+    .filter(item => !isDeprecatedNonFootballUrl(item.url))
+    .map((item) => ({
+      item,
+      score: calculateThematicScore(item)
+    }))
+    .sort((a, b) => b.score - a.score);
 
   if (allScored.length > 0) {
     const bestItem = allScored[0].item;

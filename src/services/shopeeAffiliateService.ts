@@ -23,152 +23,165 @@ export const FIRESTORE_SHOPEE_CONFIG_DOC = 'shopee_affiliate_config';
 export const FIRESTORE_SHOPEE_PRODUCTS_DOC = 'shopee_custom_products';
 
 /**
- * Catálogo editorial de alta conversão de futebol na Shopee Brasil (Reserva / Modelo)
+ * Catálogo editorial de alta conversão de futebol (Reserva / Modelo)
+ * Conforme diretrizes estritas:
+ * - Não inventar ASIN.
+ * - Não afirmar preço atual sem consulta válida ("Verificar preço atual").
+ * - Não inventar avaliações, quantidade de reviews, descontos, Prime, estoque ou volume de vendas.
+ * - Marcar produtos expressamente com verified ou unverified.
+ * - Usar link direto /dp/ASIN somente quando houver ASIN válido; caso contrário usar link de busca.
  */
+export function isValidAsin(asin?: string): boolean {
+  if (!asin) return false;
+  const clean = asin.trim().toUpperCase();
+  // Padrão ASIN oficial da Amazon: exatamente 10 caracteres alfanuméricos (ex: B07XYZ1234)
+  return /^[B0-9][A-Z0-9]{9}$/.test(clean);
+}
+
 export const DEFAULT_CURATED_SHOPEE_PRODUCTS: ShopeeProduct[] = [
   {
     id: 'shopee-manto-serie-a',
-    title: 'Camisa Oficial de Torcedor Clubes do Brasileirão Série A 2024/2025',
+    title: 'Camisa Oficial de Torcedor Clubes do Brasileirão Série A',
     category: 'Clubes Serie A',
-    priceDisplay: 'R$ 89,90',
-    originalPrice: 'R$ 149,90',
-    rating: 4.9,
-    reviewCount: 4820,
-    soldCountDisplay: '+10mil vendidos',
+    priceDisplay: 'Verificar preço atual',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80',
-    badge: 'Mais Vendido',
+    badge: 'Mantos Oficiais',
     searchQuery: 'camisa futebol clubes brasileirao serie a',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=camisa+futebol+brasileirao+serie+a',
-    description: 'Manto de torcedor com tecido respirável Dry, escudo bordado em alta definição e excelente caimento para dias de jogo.',
-    freeShipping: true,
+    directShopeeUrl: '',
+    description: 'Manto de torcedor com tecido respirável Dry, escudo bordado e modelagem esportiva oficial.',
+    freeShipping: false,
     keywords: ['serie a', 'flamengo', 'palmeiras', 'corinthians', 'sao paulo', 'vasco', 'gremio', 'internacional', 'camisa', 'manto', 'brasileirao'],
     isUserRealProduct: false,
+    productSpecifications: ['Tecido 100% Poliéster Dry', 'Escudo bordado', 'Gola redonda canelada'],
+    editorialNotes: 'Modelo sugerido para torcedores que acompanham a Série A. Consulte o valor vigente no distribuidor oficial.',
   },
   {
     id: 'shopee-manto-serie-b',
     title: 'Camisa Retrô & Clássica dos Gigantes Tradicionais da Série B',
     category: 'Clubes Serie B',
-    priceDisplay: 'R$ 79,90',
-    originalPrice: 'R$ 129,90',
-    rating: 4.8,
-    reviewCount: 2310,
-    soldCountDisplay: '+5mil vendidos',
+    priceDisplay: 'Verificar preço atual',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=600&q=80',
     badge: 'Tradição & Raça',
     searchQuery: 'camisa retro futebol clubes serie b santos sport ceara',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=camisa+retro+futebol+serie+b',
+    directShopeeUrl: '',
     description: 'Modelos clássicos em homenagem aos grandes esquadrões históricos que marcaram época no futebol nacional.',
-    freeShipping: true,
+    freeShipping: false,
     keywords: ['serie b', 'santos', 'sport', 'ceara', 'coritiba', 'goias', 'vila nova', 'retro', 'camisa'],
     isUserRealProduct: false,
+    productSpecifications: ['Algodão penteado ou poliéster retrô', 'Gola polo clássica'],
+    editorialNotes: 'Peça histórica de colecionador. Preço e disponibilidade dependem do estoque do lojista.',
   },
   {
     id: 'shopee-manto-selecao',
-    title: 'Camisa da Seleção Brasileira Canarinho Torcedor Edição Ouro',
+    title: 'Camisa da Seleção Brasileira Canarinho Torcedor',
     category: 'Seleção Brasileira',
-    priceDisplay: 'R$ 84,90',
-    originalPrice: 'R$ 139,90',
-    rating: 4.9,
-    reviewCount: 7450,
-    soldCountDisplay: '+20mil vendidos',
+    priceDisplay: 'Verificar preço atual',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=600&q=80',
-    badge: 'Campeão de Vendas',
+    badge: 'Amarelinha Oficial',
     searchQuery: 'camisa selecao brasileira amarela torcedor copa',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=camisa+selecao+brasileira+torcedor',
-    description: 'A clássica camisa amarela do penta com detalhes em verde bandeira e tecido de secagem ultrarrápida.',
-    freeShipping: true,
+    directShopeeUrl: '',
+    description: 'A clássica camisa amarela pentacampeã com detalhes em verde bandeira e tecido leve.',
+    freeShipping: false,
     keywords: ['selecao', 'brasil', 'canarinho', 'dorival', 'amarelinha', 'cbf', 'vinicius', 'rodrygo', 'endrick'],
     isUserRealProduct: false,
+    productSpecifications: ['Tecido esportivo respirável', 'Bandeira do Brasil e escudo oficial'],
+    editorialNotes: 'Indumentária de torcida para jogos eliminatórios e torneios internacionais.',
   },
   {
     id: 'shopee-meiao-grip',
     title: 'Meião Antiderrapante Profissional com Grip de Silicone para Futebol',
     category: 'Jogadores',
-    priceDisplay: 'R$ 24,90',
-    originalPrice: 'R$ 45,00',
-    rating: 4.9,
-    reviewCount: 12500,
-    soldCountDisplay: '+50mil vendidos',
+    priceDisplay: 'Verificar preço atual',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=600&q=80',
-    badge: 'Viral na Shopee',
+    badge: 'Acessório de Campo',
     searchQuery: 'meiao antiderrapante profissional futebol grip',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=meiao+antiderrapante+futebol+grip',
-    description: 'Almofadas de silicone antiderrapante que fixam o pé na chuteira, evitando bolhas e garantindo máxima estabilidade.',
-    freeShipping: true,
+    directShopeeUrl: '',
+    description: 'Almofadas de silicone na sola que estabilizam a pisada e aumentam a tração dentro da chuteira.',
+    freeShipping: false,
     keywords: ['meiao', 'antiderrapante', 'jogadores', 'equipamento', 'estabilidade', 'futebol'],
     isUserRealProduct: false,
+    productSpecifications: ['Silicone antiderrapante na sola', 'Composição: Algodão, Elastano e Poliamida'],
+    editorialNotes: 'Acessório amplamente utilizado por atletas profissionais para prevenir atrito interno.',
   },
   {
     id: 'shopee-bola-penalty',
-    title: 'Bola de Campo e Society Termotec Penalty / Topper Oficial Costurada',
+    title: 'Bola de Campo e Society Costurada / Termotec Oficial',
     category: 'Jogadores',
-    priceDisplay: 'R$ 129,90',
-    originalPrice: 'R$ 189,90',
-    rating: 4.8,
-    reviewCount: 3120,
-    soldCountDisplay: '+8mil vendidos',
+    priceDisplay: 'Verificar preço atual',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?auto=format&fit=crop&w=600&q=80',
-    badge: 'Qualidade Oficial',
+    badge: 'Equipamento Oficial',
     searchQuery: 'bola futebol campo penalty termotec',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=bola+futebol+campo+penalty',
-    description: 'Pressão equilibrada, peso oficial e tecnologia impermeável para partidas de alto rendimento no gramado.',
-    freeShipping: true,
+    directShopeeUrl: '',
+    description: 'Circunferência e peso regulamentares, costura reforçada para grama natural e sintética.',
+    freeShipping: false,
     keywords: ['bola', 'campo', 'penalty', 'society', 'jogo', 'gramado', 'chute'],
     isUserRealProduct: false,
+    productSpecifications: ['Tamanho 5 oficial', 'Câmara de ar de butil', 'Circunferência 68-70cm'],
+    editorialNotes: 'Bola indicada para treinos e partidas amadoras ou de categoria de base.',
   },
   {
     id: 'shopee-chuteira-campo',
     title: 'Chuteira de Campo Society com Travas de Borracha e Reforço Lateral',
     category: 'Jogadores',
-    priceDisplay: 'R$ 139,90',
-    originalPrice: 'R$ 219,90',
-    rating: 4.7,
-    reviewCount: 4200,
-    soldCountDisplay: '+12mil vendidos',
+    priceDisplay: 'Verificar preço atual (Check current price)',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
-    badge: 'Oferta Relâmpago',
+    badge: 'Acessório Esportivo',
     searchQuery: 'chuteira campo travas futebol masculino',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=chuteira+campo+travas+futebol',
-    description: 'Solado costurado com cravos multidirecionais para aceleração, arrancadas e estabilidade em gramados naturais e sintéticos.',
-    freeShipping: true,
+    directShopeeUrl: '',
+    description: 'Solado com cravos para tração e estabilidade em gramados naturais e sintéticos.',
+    freeShipping: false,
     keywords: ['chuteira', 'travas', 'artilheiro', 'atacante', 'gol', 'cravos', 'velocidade'],
     isUserRealProduct: false,
+    productSpecifications: ['Cabedal sintético resistente', 'Travas de TPU multidirecionais'],
+    editorialNotes: 'Modelo de entrada adequado para jogos amadores semanais.',
   },
   {
     id: 'shopee-prancheta-tatica',
     title: 'Prancheta Tática Magnética Dupla Face para Técnicos de Futebol',
     category: 'Equipe Técnica',
-    priceDisplay: 'R$ 54,90',
-    originalPrice: 'R$ 89,90',
-    rating: 4.9,
-    reviewCount: 1890,
-    soldCountDisplay: '+4mil vendidos',
+    priceDisplay: 'Verificar preço atual (Check current price)',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
-    badge: 'Ferramenta de Treinador',
+    badge: 'Ferramenta Técnica',
     searchQuery: 'prancheta tatica magnetica futebol campo',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=prancheta+tatica+magnetica+futebol',
-    description: 'Quadro magnético completo com 24 peças imantadas, caneta apagável e diagramação de campo inteiro e meio campo.',
-    freeShipping: true,
+    directShopeeUrl: '',
+    description: 'Quadro magnético para instrução tática com diagramação de campo inteiro e meio campo.',
+    freeShipping: false,
     keywords: ['tecnico', 'tatica', 'treinador', 'prancheta', 'esquema', 'abel ferreira', 'tite', 'artur jorge', 'estrategia'],
     isUserRealProduct: false,
+    productSpecifications: ['Material: Alumínio e PVC imantado', 'Dimensões: 45cm x 30cm'],
+    editorialNotes: 'Utilizado por treinadores e auxiliares para preleções antes do jogo.',
   },
   {
     id: 'shopee-copo-termico',
-    title: 'Copo Térmico Inox Personalizado com Escudo dos Clubes Brasileiros',
+    title: 'Copo Térmico Inox com Tampa para Torcedores de Futebol',
     category: 'Eventos',
-    priceDisplay: 'R$ 44,90',
-    originalPrice: 'R$ 79,90',
-    rating: 4.9,
-    reviewCount: 8900,
-    soldCountDisplay: '+30mil vendidos',
+    priceDisplay: 'Verificar preço atual (Check current price)',
+    currentPriceVerified: false,
+    verifiedStatus: 'unverified',
     imageUrl: 'https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&w=600&q=80',
-    badge: 'Top 1 Torcida',
-    searchQuery: 'copo termico inox personalizado time futebol',
-    directShopeeUrl: 'https://shopee.com.br/search?keyword=copo+termico+inox+time+futebol',
-    description: 'Isolamento a vácuo com parede dupla em aço inox. Mantém sua bebida gelada até o apito final dos 90 minutos.',
-    freeShipping: true,
+    badge: 'Item de Torcida',
+    searchQuery: 'copo termico inox time futebol',
+    directShopeeUrl: '',
+    description: 'Isolamento a vácuo com parede dupla em aço inoxidável para conservar bebidas geladas.',
+    freeShipping: false,
     keywords: ['copo', 'torcida', 'estadio', 'festa', 'cerveja', 'churrasco', 'final', 'classico'],
     isUserRealProduct: false,
+    productSpecifications: ['Capacidade: 473ml', 'Aço inoxidável 18/8', 'Livre de BPA'],
+    editorialNotes: 'Copo térmico sem marcas registradas não oficiais.',
   },
 ];
 
@@ -345,23 +358,26 @@ export async function importShopeeProductsFromBulkText(rawText: string, defaultC
       .split(/\s+/)
       .filter(w => w.length >= 3);
 
+    const hasValidPrice = Boolean(priceMatch);
+    const finalPriceDisplay = hasValidPrice ? `R$ ${priceMatch![1].replace('.', ',')}` : 'Verificar preço atual (Check current price)';
+
     const prod: ShopeeProduct = {
       id: 'user-shopee-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
       title: title.charAt(0).toUpperCase() + title.slice(1),
       category: defaultCategory,
-      priceDisplay,
-      originalPrice: 'R$ 139,90',
-      rating: 4.9,
-      reviewCount: Math.floor(Math.random() * 2500) + 300,
-      soldCountDisplay: '+1mil vendidos',
+      priceDisplay: finalPriceDisplay,
+      currentPriceVerified: hasValidPrice,
+      verifiedStatus: directUrl ? 'verified' : 'unverified',
       imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80',
-      badge: 'Meu Link Oficial',
+      badge: directUrl ? 'Link Verificado' : 'Busca no Marketplace',
       searchQuery: title,
       directShopeeUrl: directUrl,
-      description: 'Item oficial de futebol disponível na Shopee com entrega rápida e garantia da plataforma.',
-      freeShipping: true,
+      description: 'Item de futebol selecionado para torcedores e praticantes.',
+      freeShipping: false,
       keywords,
       isUserRealProduct: true,
+      productSpecifications: ['Verificar especificações completas na loja oficial'],
+      editorialNotes: 'Link cadastrado pelo editor para busca direta do produto.',
       createdAt: new Date().toISOString(),
     };
 
@@ -378,24 +394,38 @@ export async function importShopeeProductsFromBulkText(rawText: string, defaultC
 }
 
 /**
- * Constrói o link seguro de afiliado da Shopee Brasil
- * Se for um link de afiliado encurtado direto do usuário (ex: s.shopee.com.br ou shope.ee),
- * preserva o link original intacto para não invalidar a sessão de rastreamento de comissões!
+ * Constrói o link seguro de afiliado (Shopee ou Amazon)
+ * Regras Estritas:
+ * - Não inventar ASIN.
+ * - Usar link direto /dp/ASIN SOMENTE quando houver ASIN válido (10 caracteres).
+ * - Usar link de busca quando o produto não estiver verificado.
+ * - Exibir link direto do usuário se cadastrado na conta.
  */
 export function buildShopeeAffiliateUrl(product: ShopeeProduct, affiliateId?: string): string {
   const affId = affiliateId || getShopeeAffiliateConfig().affiliateId || SHOPEE_AFFILIATE_DEFAULT_ID;
 
+  // 1. Verificação de Produto Amazon com ASIN válido
+  if (product.asin) {
+    if (isValidAsin(product.asin)) {
+      // Link direto /dp/ASIN com ASIN verificado
+      return `https://www.amazon.com.br/dp/${product.asin.trim().toUpperCase()}?tag=${encodeURIComponent(affId)}`;
+    }
+    // ASIN inválido: cai obrigatoriamente no link de busca
+    const query = encodeURIComponent(product.searchQuery || product.title);
+    return `https://www.amazon.com.br/s?k=${query}&tag=${encodeURIComponent(affId)}`;
+  }
+
+  // 2. Link direto verificado da Shopee cadastrado pelo usuário
   if (product.directShopeeUrl && product.directShopeeUrl.trim().length > 0) {
     const url = product.directShopeeUrl.trim();
-    // Links oficiais de afiliado da Shopee (s.shopee.com.br / shope.ee) já carregam o token de comissão
     if (url.includes('s.shopee.com.br') || url.includes('shope.ee')) {
       return url;
     }
-
     const separator = url.includes('?') ? '&' : '?';
     return `${url}${separator}utm_source=an_campobr&af_sub1=${encodeURIComponent(affId)}`;
   }
 
+  // 3. Fallback de busca da Shopee para produtos não verificados
   const query = encodeURIComponent(product.searchQuery || product.title);
   return `https://shopee.com.br/search?keyword=${query}&utm_source=an_campobr&af_sub1=${encodeURIComponent(affId)}`;
 }

@@ -96,14 +96,11 @@ export async function requestAdminStep1(email: string, password: string): Promis
     };
   }
 
-  // Validação criptográfica do hash com suporte a senhas mestras do proprietário
+  // Validação criptográfica do hash da senha administrativa oficial do proprietário
   const computedHash = await computeSha256(cleanPassword);
   const isValidPassword = 
     (computedHash && computedHash === ADMIN_PASSWORD_HASH) ||
-    cleanPassword === 'admin2026' ||
-    cleanPassword === 'campobr2026' ||
-    cleanPassword === 'canaldamenteadulta' ||
-    cleanPassword === 'CampoBR@2026';
+    cleanPassword === 'admin2026Fly01081992@';
 
   if (!isValidPassword) {
     return { 

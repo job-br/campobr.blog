@@ -39,17 +39,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- PERFORMANCE: CSS de fontes não bloqueia a renderização (preload + swap) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
     <!-- Google Instant Rendering Engine: Speculation Rules API (Chrome / Chromium 0ms Prerender) -->
     <script type="speculationrules">
     {
-      "prerender": [
-        {
-          "source": "list",
-          "urls": ["/", "/?tab=postagens", "/?tab=noticias"],
-          "eagerness": "moderate"
-        }
-      ],
       "prefetch": [
         {
           "source": "document",
@@ -65,8 +60,6 @@
     </script>
     <!-- Google AdSense Script Oficial -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4032013040376402" crossorigin="anonymous"></script>
-    <!-- Google Identity Services (GSI) -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body class="bg-[#080c10] text-slate-100 antialiased selection:bg-emerald-500 selection:text-black">
     <div id="root"></div>

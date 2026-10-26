@@ -20,7 +20,12 @@ import {
 import { getAuth, Auth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { Post, Comment, AdSenseConfig } from '../types';
 import { INITIAL_POSTS, INITIAL_COMMENTS } from '../data/mockPosts';
-import { getUniqueThematicImageForPost, generateImageApplicationForPost } from './aiVisualThemeEngine';
+import { 
+  getUniqueThematicImageForPost, 
+  generateImageApplicationForPost,
+  isDeprecatedNonFootballUrl,
+  DEPRECATED_NON_FOOTBALL_PHOTOS 
+} from './aiVisualThemeEngine';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 export enum OperationType {
@@ -83,9 +88,41 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 }
 
 // Local Storage Keys
-const LOCAL_STORAGE_KEY_POSTS = 'campobr_posts_v12_reviewed_striking_images';
+const LOCAL_STORAGE_KEY_POSTS = 'campobr_posts_v16_semantic_football_covers';
 const LOCAL_STORAGE_KEY_COMMENTS = 'campobr_comments_v2';
 const LOCAL_STORAGE_KEY_ADS = 'campobr_ads_settings_v1';
+
+// PERFORMANCE: limita leitura do Firestore e reaproveita cache local entre visitas
+const POSTS_QUERY_LIMIT = 60; // matérias mais recentes carregadas por visita
+const POSTS_CACHE_TS_KEY = 'campobr_posts_cache_ts_v1'; // existe somente se o cache veio da nuvem
+const POSTS_CACHE_TTL_MS = 5 * 60 * 1000; // 5 min sem nova leitura ao Firestore
+let localPostsMemo: Post[] | null = null; // cache em memória (evita re-parse/re-processamento)
+
+function markPostsCacheFresh(): void {
+  try { localStorage.setItem(POSTS_CACHE_TS_KEY, String(Date.now())); } catch { /* ignore */ }
+}
+
+/** Retorna posts vindos da nuvem em visitas anteriores (sem semear dados fictícios). */
+export function getCachedPostsIfAny(): Post[] | null {
+  try {
+    if (!localStorage.getItem(POSTS_CACHE_TS_KEY)) return null;
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_POSTS);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Post[];
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function isPostsCacheFresh(): boolean {
+  try {
+    const ts = Number(localStorage.getItem(POSTS_CACHE_TS_KEY) || 0);
+    return ts > 0 && Date.now() - ts < POSTS_CACHE_TTL_MS;
+  } catch {
+    return false;
+  }
+}
 
 // Helper para eliminar postagens duplicadas pelo título
 function deduplicatePosts(posts: Post[]): { unique: Post[]; removedIds: string[] } {
@@ -224,13 +261,13 @@ export function upgradeToHighValueContent(posts: Post[]): { posts: Post[]; upgra
 export function ensureUniquePostImages(posts: Post[]): { posts: Post[]; updatedCount: number } {
   if (!posts || posts.length === 0) return { posts: [], updatedCount: 0 };
 
-  // Mapeamento dos 36 posts com imagens únicas de alta resolução
-  const initialMapById = new Map<string, string>();
-  const initialMapByTitle = new Map<string, string>();
+  // Mapeamento dos 36 posts com imagens e conceitos únicos de alta resolução
+  const initialMapById = new Map<string, Post>();
+  const initialMapByTitle = new Map<string, Post>();
   for (const ip of INITIAL_POSTS) {
-    if (ip.id) initialMapById.set(ip.id, ip.coverImage);
+    if (ip.id) initialMapById.set(ip.id, ip);
     const key = (ip.title || '').trim().toLowerCase();
-    if (key) initialMapByTitle.set(key, ip.coverImage);
+    if (key) initialMapByTitle.set(key, ip);
   }
 
   const usedUrls = new Set<string>();
@@ -243,43 +280,69 @@ export function ensureUniquePostImages(posts: Post[]): { posts: Post[]; updatedC
     const photoMatch = cover.match(/photo-[a-zA-Z0-9_-]+/);
     const photoKey = photoMatch ? photoMatch[0] : cleanBaseUrl;
 
+    const postTitleKey = (post.title || '').trim().toLowerCase();
+    const seed = initialMapById.get(post.id) || initialMapByTitle.get(postTitleKey);
+    const hasDeprecatedPhoto = isDeprecatedNonFootballUrl(cover);
+    const shouldEnforceSeed = Boolean(seed && (cover !== seed.coverImage || hasDeprecatedPhoto));
+
     const isOldBrokenOrRepeated =
       !cover ||
-      cover.includes('1508098682722-e99c43a406b2') || // antiga foto de bola na grama repetida
+      hasDeprecatedPhoto ||
+      shouldEnforceSeed ||
       usedUrls.has(cover) ||
       (cleanBaseUrl && usedUrls.has(cleanBaseUrl)) ||
       (photoKey && usedUrls.has(photoKey));
 
     if (isOldBrokenOrRepeated) {
-      // 1. Tenta recuperar a foto original verificada do seed para esta matéria
-      const postTitleKey = (post.title || '').trim().toLowerCase();
-      const seedPhoto = initialMapById.get(post.id) || initialMapByTitle.get(postTitleKey);
-      
       let candidatePhoto = '';
+      let newMention = '';
+      let newThematicConcept = '';
+      let newVisualMood = post.visualMood || 'estádio';
+
+      // 1. Prioridade absoluta para o seed curado quando aplicável
       if (
-        seedPhoto && 
-        !usedUrls.has(seedPhoto) && 
-        !usedUrls.has(seedPhoto.split('?')[0]) &&
-        (!seedPhoto.match(/photo-[a-zA-Z0-9_-]+/) || !usedUrls.has(seedPhoto.match(/photo-[a-zA-Z0-9_-]+/)![0]))
+        seed && 
+        !isDeprecatedNonFootballUrl(seed.coverImage) &&
+        !usedUrls.has(seed.coverImage) && 
+        !usedUrls.has(seed.coverImage.split('?')[0]) &&
+        (!seed.coverImage.match(/photo-[a-zA-Z0-9_-]+/) || !usedUrls.has(seed.coverImage.match(/photo-[a-zA-Z0-9_-]+/)![0]))
       ) {
-        candidatePhoto = seedPhoto;
+        candidatePhoto = seed.coverImage;
+        newMention = seed.aiImageMention || '📸 Fotografia Editorial de Futebol Profissional CampoBR';
+        newThematicConcept = seed.thematicConcept || `${seed.category} • CampoBR`;
+        newVisualMood = seed.visualMood || 'estádio';
       } else {
-        // 2. Seleciona dinamicamente da biblioteca esportiva com 52+ fotos temáticas ou SVG de alta precisão
+        // 2. Seleciona dinamicamente da biblioteca esportiva com fotos temáticas 100% futebol
         const uniqueVisual = getUniqueThematicImageForPost(
           post.title || '',
           post.summary || '',
-          post.category || 'Eventos',
-          usedUrls
+          post.category || 'Clubes Serie A',
+          usedUrls,
+          false,
+          post.content || ''
         );
         candidatePhoto = uniqueVisual.url;
+        newMention = uniqueVisual.mention;
+        newThematicConcept = uniqueVisual.thematicConcept;
+        newVisualMood = uniqueVisual.visualMood;
       }
 
       cover = candidatePhoto;
       updatedCount++;
+
+      const appAnalysis = generateImageApplicationForPost(
+        post.title || '',
+        post.summary || '',
+        post.category || 'Clubes Serie A',
+        newThematicConcept,
+        newVisualMood,
+        post.content || ''
+      );
+
       docsToUpdateInDb.push({
         id: post.id,
         coverImage: cover,
-        aiImageMention: post.aiImageMention || 'Fotografia Esportiva Editorial Verificada CampoBR'
+        aiImageMention: newMention
       });
 
       usedUrls.add(cover);
@@ -290,6 +353,13 @@ export function ensureUniquePostImages(posts: Post[]): { posts: Post[]; updatedC
       return {
         ...post,
         coverImage: cover,
+        thematicConcept: newThematicConcept,
+        visualMood: newVisualMood,
+        imageApplication: appAnalysis,
+        aiImageMention: newMention,
+        imageGenerationSource: 'curated-unique' as const,
+        reviewedBy: 'Robô Inteligente de Automação & Criação de Conteúdo (CampoBR IA)',
+        editorialStatus: '100% Temática Futebolística Aprovada'
       };
     }
 
@@ -299,27 +369,20 @@ export function ensureUniquePostImages(posts: Post[]): { posts: Post[]; updatedC
     return post;
   });
 
-  // Atualiza em segundo plano no Firestore para curar o banco na nuvem de forma assíncrona
-  if (docsToUpdateInDb.length > 0 && isOnlineFirebase() && db) {
-    setTimeout(async () => {
-      for (const item of docsToUpdateInDb) {
-        try {
-          await updateDoc(doc(db, 'posts', item.id), {
-            coverImage: item.coverImage,
-            ...(item.aiImageMention ? { aiImageMention: item.aiImageMention } : {})
-          });
-        } catch {
-          // ignora falhas de rede em background
-        }
-      }
-    }, 100);
-  }
+  // (write-back em segundo plano removido: escrever no Firestore a cada visita era caro e inseguro)
 
   return { posts: sanitized, updatedCount };
 }
 
 // Initialize local seed data if needed
 function getLocalPosts(): Post[] {
+  if (localPostsMemo) return localPostsMemo;
+  const result = computeLocalPosts();
+  localPostsMemo = result;
+  return result;
+}
+
+function computeLocalPosts(): Post[] {
   try {
     let data = localStorage.getItem(LOCAL_STORAGE_KEY_POSTS);
     if (!data) {
@@ -338,6 +401,11 @@ function getLocalPosts(): Post[] {
       ...p,
       authorAvatar: '/logo-512x512.png',
     }));
+
+    // PERFORMANCE: cache originado da nuvem já está curado; evita reprocessar tudo a cada chamada
+    if (localStorage.getItem(POSTS_CACHE_TS_KEY) && normalized.length > 0) {
+      return normalized;
+    }
 
     // Elimina repetições duplicadas se houver
     const { unique } = deduplicatePosts(normalized);
@@ -371,6 +439,7 @@ function getLocalPosts(): Post[] {
 }
 
 function saveLocalPosts(posts: Post[]): void {
+  localPostsMemo = posts;
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY_POSTS, JSON.stringify(posts));
   } catch (e) {
@@ -422,14 +491,15 @@ export function isOnlineFirebase(): boolean {
   return isFirebaseActive && db !== null;
 }
 
-// Assinatura em Tempo Real: Atualiza todos os leitores e contas instantaneamente
+// Assinatura em Tempo Real (uso restrito ao painel admin; o site público NÃO usa, para evitar
+// que cada escrita de visualização/curtida gere leituras em todos os visitantes conectados)
 export function subscribeToPosts(onUpdate: (posts: Post[]) => void): Unsubscribe {
   if (!isOnlineFirebase() || !db) {
     return () => {};
   }
   try {
     const postsRef = collection(db, 'posts');
-    const q = query(postsRef, orderBy('createdAt', 'desc'));
+    const q = query(postsRef, orderBy('createdAt', 'desc'), limit(POSTS_QUERY_LIMIT));
     return onSnapshot(
       q,
       (snapshot) => {
@@ -441,9 +511,9 @@ export function subscribeToPosts(onUpdate: (posts: Post[]) => void): Unsubscribe
           }));
           const { unique } = deduplicatePosts(cloudPosts);
           const { posts: sanitizedCloud } = ensureUniquePostImages(unique);
-          const { posts: highValueCloud } = upgradeToHighValueContent(sanitizedCloud);
-          saveLocalPosts(highValueCloud);
-          onUpdate(highValueCloud);
+          saveLocalPosts(sanitizedCloud);
+          markPostsCacheFresh();
+          onUpdate(sanitizedCloud);
         }
       },
       (err) => {
@@ -457,11 +527,22 @@ export function subscribeToPosts(onUpdate: (posts: Post[]) => void): Unsubscribe
 }
 
 // Post Operations
-export async function fetchAllPosts(): Promise<Post[]> {
+/**
+ * Carrega as matérias mais recentes.
+ * - force=false: se o cache (<5 min) é recente, não consulta o Firestore.
+ * - Uma única leitura limitada (60 docs) em vez da coleção inteira.
+ * - Sem escritas em segundo plano (sync/dedupe/enriquecimento) durante a leitura.
+ */
+export async function fetchAllPosts(force = true): Promise<Post[]> {
+  if (!force && isPostsCacheFresh()) {
+    const cached = getCachedPostsIfAny();
+    if (cached) return cached;
+  }
+
   if (isOnlineFirebase() && db) {
     try {
       const postsRef = collection(db, 'posts');
-      const q = query(postsRef, orderBy('createdAt', 'desc'));
+      const q = query(postsRef, orderBy('createdAt', 'desc'), limit(POSTS_QUERY_LIMIT));
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
@@ -470,72 +551,18 @@ export async function fetchAllPosts(): Promise<Post[]> {
           ...(d.data() as Omit<Post, 'id'>),
           authorAvatar: '/logo-512x512.png',
         }));
-        
-        // Sincroniza qualquer matéria criada no navegador do admin que ainda não estava na nuvem
-        const local = getLocalPosts();
-        const pendingUploads = local.filter(lp => !cloudPosts.some(cp => cp.id === lp.id));
-        if (pendingUploads.length > 0) {
-          for (const pending of pendingUploads) {
-            try {
-              await setDoc(doc(db, 'posts', pending.id), pending);
-              cloudPosts.unshift(pending);
-              console.info('CampoBR: Matéria do administrador sincronizada com sucesso para a nuvem:', pending.title);
-            } catch (syncErr) {
-              console.warn('Erro ao sincronizar matéria pendente:', syncErr);
-            }
-          }
-        }
 
-        // Elimina repetições duplicadas se houver
-        const { unique: dedupedCloud, removedIds } = deduplicatePosts(cloudPosts);
-        
-        // Remove duplicatas do banco de dados Firestore em segundo plano
-        if (removedIds.length > 0) {
-          for (const dupId of removedIds) {
-            deleteDoc(doc(db, 'posts', dupId)).catch(() => {});
-          }
-          console.info(`CampoBR: ${removedIds.length} matérias duplicadas foram limpas com sucesso.`);
-        }
+        // Tratamento apenas em memória (nenhuma escrita/remoção no banco)
+        const { unique } = deduplicatePosts(cloudPosts);
+        const { posts: sanitizedCloud } = ensureUniquePostImages(unique);
 
-        // Garante 100% de unicidade e resolve imagens repetidas legadas no Firestore
-        const { posts: sanitizedCloud } = ensureUniquePostImages(dedupedCloud);
-
-        // ELEVAÇÃO PARA ALTO VALOR DO ADSENSE: Enriquece conteúdos legados no Firestore
-        const { posts: highValueCloud, upgradedCount: cloudUpgraded, docsToUpdateInDb } = upgradeToHighValueContent(sanitizedCloud);
-
-        if (cloudUpgraded > 0 && db) {
-          setTimeout(async () => {
-            for (const enriched of docsToUpdateInDb) {
-              try {
-                await updateDoc(doc(db, 'posts', enriched.id), {
-                  content: enriched.content,
-                  summary: enriched.summary,
-                  readTimeMinutes: enriched.readTimeMinutes,
-                  authorRole: enriched.authorRole,
-                  tags: enriched.tags,
-                });
-              } catch {
-                // ignora falhas temporárias em background
-              }
-            }
-            console.info(`CampoBR: ${docsToUpdateInDb.length} matérias enriquecidas para o padrão AdSense no Firestore.`);
-          }, 100);
-        }
-
-        saveLocalPosts(highValueCloud);
-        return highValueCloud;
+        saveLocalPosts(sanitizedCloud);
+        markPostsCacheFresh();
+        return sanitizedCloud;
       }
 
-      // Se o Firestore estiver vazio no primeiro boot, semeia com todas as matérias
-      const local = getLocalPosts();
-      for (const p of local) {
-        try {
-          await setDoc(doc(db, 'posts', p.id), p);
-        } catch (seedErr) {
-          console.warn('Erro ao semear post:', p.id, seedErr);
-        }
-      }
-      return local;
+      // Firestore vazio: usa semente local (somente leitura, sem gravar no banco)
+      return getLocalPosts();
     } catch (err) {
       console.warn('Fallback para armazenamento seguro local:', err);
       return getLocalPosts();
@@ -673,6 +700,18 @@ export async function deletePostById(id: string): Promise<void> {
 }
 
 export async function registerPostView(id: string): Promise<number> {
+  // PERFORMANCE: conta no máximo 1 visualização por matéria/sessão (menos escritas no Firestore)
+  try {
+    const key = 'campobr_viewed_' + id;
+    if (sessionStorage.getItem(key)) {
+      const known = getLocalPosts().find(p => p.id === id);
+      return known ? known.viewsCount : 0;
+    }
+    sessionStorage.setItem(key, '1');
+  } catch {
+    // sessionStorage indisponível: segue o fluxo normal
+  }
+
   const posts = getLocalPosts();
   const target = posts.find(p => p.id === id);
   const nextViews = (target ? target.viewsCount : 0) + 1;

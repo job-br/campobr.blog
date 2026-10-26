@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { Post, FootballCategory, AdSenseConfig, MatchLiveScore, PageTab, AdminSession } from './types';
 import { 
   fetchAllPosts, 
-  subscribeToPosts,
+  getCachedPostsIfAny,
   registerPostView, 
   togglePostLike, 
   getAdSenseConfig,
@@ -22,18 +22,20 @@ import { FeaturedHeroPost } from './components/FeaturedHeroPost';
 import { Top10PostsList } from './components/Top10PostsList';
 import { PostsView } from './components/PostsView';
 import { NewsView } from './components/NewsView';
-import { AdminPanel } from './components/AdminPanel';
 import { Footer } from './components/Footer';
-import { PostDetailModal } from './components/PostDetailModal';
-import { LegalModal, LegalDocType } from './components/LegalModal';
-import { Admin2FAModal } from './components/Admin2FAModal';
-import { QuickPostModal } from './components/QuickPostModal';
-import { DownloadModal } from './components/DownloadModal';
-import { downloadSourceZipReliable } from './services/zipDownloader';
+import type { LegalDocType } from './components/LegalModal';
+import { isProjectEnvironment } from './services/zipDownloader';
+
+// PERFORMANCE: componentes pesados/raros carregados sob demanda (code-splitting)
+const AdminPanel = lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
+const PostDetailModal = lazy(() => import('./components/PostDetailModal').then(m => ({ default: m.PostDetailModal })));
+const LegalModal = lazy(() => import('./components/LegalModal').then(m => ({ default: m.LegalModal })));
+const Admin2FAModal = lazy(() => import('./components/Admin2FAModal').then(m => ({ default: m.Admin2FAModal })));
+const QuickPostModal = lazy(() => import('./components/QuickPostModal').then(m => ({ default: m.QuickPostModal })));
+const DownloadModal = lazy(() => import('./components/DownloadModal').then(m => ({ default: m.DownloadModal })));
 import { MobileStickyAnchorAd } from './components/MobileStickyAnchorAd';
 import { LATEST_GOOGLE_MATCHES } from './services/googleSportsService';
-import { automationService } from './services/automationService';
-import { Loader2, Trash2, AlertTriangle, X, ArrowUp, ArrowDown, Download } from 'lucide-react';
+import { Loader2, Trash2, AlertTriangle, X, ArrowUp, ArrowDown } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<PageTab>('inicio');
@@ -61,11 +63,11 @@ export default function App() {
   // Real-time football scoreboard for Brazilian games synchronized with Google Sports
   const [liveMatches] = useState<MatchLiveScore[]>(LATEST_GOOGLE_MATCHES);
 
-  // Load posts
-  const loadPosts = async () => {
+  // Load posts (force=true ignora o cache de 5 min; usado após ações do admin)
+  const loadPosts = async (force = true) => {
     try {
-      setLoading(true);
-      const data = await fetchAllPosts();
+      if (force) setLoading(true);
+      const data = await fetchAllPosts(force);
       setPosts(data);
     } catch (err) {
       console.error('Erro ao carregar postagens:', err);
@@ -75,34 +77,51 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadPosts();
-    const unsubscribe = subscribeToPosts((livePosts) => {
-      if (livePosts && livePosts.length > 0) {
-        setPosts(livePosts);
-        setLoading(false);
-      }
-    });
+    // Stale-while-revalidate: pinta imediatamente o cache da visita anterior (se vier da nuvem)
+    const cached = getCachedPostsIfAny();
+    if (cached) {
+      setPosts(cached);
+      setLoading(false);
+    }
+    // Uma única leitura limitada ao Firestore (pula a rede se o cache tem < 5 min)
+    loadPosts(false);
 
-    // Watcher de Automação & Publicação em Segundo Plano (Otimizado para economia de recursos e bateria)
-    const runIdleCheck = () => {
-      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-        window.requestIdleCallback(() => automationService.checkAndRun(() => loadPosts()));
-      } else {
-        setTimeout(() => automationService.checkAndRun(() => loadPosts()), 100);
-      }
-    };
+    // Robô de automação: só roda no navegador do ADMIN (antes rodava em todo visitante,
+    // a cada 60 s, carregando o SDK de IA e relendo o banco)
+    let autoInterval: ReturnType<typeof setInterval> | undefined;
+    if (adminAuthService.getCurrentSession()) {
+      const runAutomation = () => {
+        import('./services/automationService')
+          .then(({ automationService }) => automationService.checkAndRun(() => loadPosts()))
+          .catch(() => {});
+      };
+      const runIdleCheck = () => {
+        if (document.hidden) return; // não trabalha com a aba em segundo plano
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(runAutomation);
+        } else {
+          setTimeout(runAutomation, 100);
+        }
+      };
+      runIdleCheck();
+      autoInterval = setInterval(runIdleCheck, 60000);
+    }
 
-    runIdleCheck();
-    const autoInterval = setInterval(runIdleCheck, 60000);
-
+    // Throttle do scroll via requestAnimationFrame + só atualiza estado quando muda
+    let ticking = false;
     const handleWindowScroll = () => {
-      setShowPageScrollNav(window.scrollY > 350);
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const next = window.scrollY > 350;
+        setShowPageScrollNav((prev) => (prev === next ? prev : next));
+        ticking = false;
+      });
     };
     window.addEventListener('scroll', handleWindowScroll, { passive: true });
 
     return () => {
-      unsubscribe();
-      clearInterval(autoInterval);
+      if (autoInterval) clearInterval(autoInterval);
       window.removeEventListener('scroll', handleWindowScroll);
     };
   }, []);
@@ -122,14 +141,7 @@ export default function App() {
           return;
         }
 
-        // Suporte a download direto (?download=source, ?download=codigo ou #download)
-        const downloadParam = urlParams.get('download');
         const hash = window.location.hash.replace(/^#/, '');
-        if (downloadParam === 'source' || downloadParam === 'codigo' || downloadParam === 'all' || downloadParam === 'zip' || hash === 'download') {
-          setIsDownloadModalOpen(true);
-          downloadSourceZipReliable();
-          return;
-        }
 
         const slugOrId = urlParams.get('materia') || urlParams.get('post');
         if (slugOrId) {
@@ -370,7 +382,7 @@ export default function App() {
         onOpenAdmin2FA={() => setShowAdmin2FAModal(true)}
         onOpenNewPost={handleStartNewPost}
         onAdminLogout={handleAdminLogout}
-        onOpenDownload={() => setIsDownloadModalOpen(true)}
+        onOpenDownload={() => { if (isProjectEnvironment()) setIsDownloadModalOpen(true); }}
       />
 
       {/* Main Container */}
@@ -396,7 +408,7 @@ export default function App() {
                     onSelectCategory={setSelectedCategory}
                     categoryCounts={categoryCounts}
                     liveMatches={liveMatches}
-                    onOpenDownload={() => setIsDownloadModalOpen(true)}
+                    onOpenDownload={() => { if (isProjectEnvironment()) setIsDownloadModalOpen(true); }}
                   />
                 </div>
 
@@ -486,6 +498,7 @@ export default function App() {
 
             {/* VIEW 4: ADMIN (Full Control Panel with 2FA Gate, CRUD, Ads, Firebase) */}
             {activeTab === 'admin' && (
+              <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-emerald-400" /></div>}>
               <AdminPanel
                 posts={posts}
                 adsConfig={adsConfig}
@@ -497,6 +510,7 @@ export default function App() {
                 onAdminLogout={handleAdminLogout}
                 onOpenQuickNewPost={handleStartNewPost}
               />
+              </Suspense>
             )}
           </>
         )}
@@ -513,6 +527,8 @@ export default function App() {
       />
 
       {/* Post Reading Modal with Full Article Renderer & Admin Controls */}
+      {selectedPost && (
+      <Suspense fallback={null}>
       <PostDetailModal
         post={selectedPost}
         onClose={handleClosePostModal}
@@ -524,9 +540,12 @@ export default function App() {
         relatedPosts={relatedPosts}
         adsConfig={adsConfig}
       />
+      </Suspense>
+      )}
 
       {/* Quick Post Create/Edit Modal */}
       {quickPostTarget !== undefined && (
+        <Suspense fallback={null}>
         <QuickPostModal
           isOpen={true}
           editingPost={quickPostTarget}
@@ -538,20 +557,29 @@ export default function App() {
           }}
           availablePosts={posts}
         />
+        </Suspense>
       )}
 
       {/* Admin 2-Step Verification Modal */}
-      <Admin2FAModal
-        isOpen={showAdmin2FAModal}
-        onClose={() => setShowAdmin2FAModal(false)}
-        onSuccess={handleAdminLoginSuccess}
-      />
+      {showAdmin2FAModal && (
+        <Suspense fallback={null}>
+          <Admin2FAModal
+            isOpen={showAdmin2FAModal}
+            onClose={() => setShowAdmin2FAModal(false)}
+            onSuccess={handleAdminLoginSuccess}
+          />
+        </Suspense>
+      )}
 
       {/* Official Download Modal (ZIP) */}
-      <DownloadModal
-        isOpen={isDownloadModalOpen}
-        onClose={() => setIsDownloadModalOpen(false)}
-      />
+      {isDownloadModalOpen && (
+        <Suspense fallback={null}>
+          <DownloadModal
+            isOpen={isDownloadModalOpen}
+            onClose={() => setIsDownloadModalOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmPost && (
@@ -600,10 +628,14 @@ export default function App() {
       )}
 
       {/* Legal and Information Modals */}
-      <LegalModal
-        type={legalModalType}
-        onClose={() => setLegalModalType(null)}
-      />
+      {legalModalType && (
+        <Suspense fallback={null}>
+          <LegalModal
+            type={legalModalType}
+            onClose={() => setLegalModalType(null)}
+          />
+        </Suspense>
+      )}
 
       {/* Mobile Sticky Footer Anchor Ad (Padrão AdSense Oficial) */}
       <MobileStickyAnchorAd adsConfig={adsConfig} />
@@ -630,23 +662,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Botão Flutuante de Download Rápido do Projeto - Sempre acessível em qualquer tela sem precisar ser admin */}
-      {!selectedPost && (
-        <div className="fixed bottom-6 left-5 sm:left-7 z-40 animate-fade-in">
-          <button
-            type="button"
-            onClick={() => setIsDownloadModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-[#090f18]/95 hover:bg-slate-900 border border-emerald-500/50 hover:border-emerald-400 text-emerald-300 hover:text-white text-xs font-bold shadow-2xl transition-all cursor-pointer group backdrop-blur-md"
-            title="Baixar Projeto Completo ZIP (Código-Fonte e Build pronta)"
-          >
-            <Download className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform animate-pulse" />
-            <span className="hidden sm:inline">Baixar Projeto</span>
-            <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
-              ZIP
-            </span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }

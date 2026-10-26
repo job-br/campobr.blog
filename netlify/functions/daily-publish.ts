@@ -12,6 +12,7 @@ import {
   collection, 
   query, 
   orderBy, 
+  limit, 
   getDocs, 
   setDoc, 
   doc, 
@@ -108,7 +109,7 @@ export const handler = async (event: any) => {
 
     // Consulta matérias para checar duplicação
     const postsRef = collection(db, 'posts');
-    const q = query(postsRef, orderBy('createdAt', 'desc'));
+    const q = query(postsRef, orderBy('createdAt', 'desc'), limit(80));
     const snap = await getDocs(q);
     const existingPosts = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
 
