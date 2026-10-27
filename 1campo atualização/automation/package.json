@@ -1,0 +1,19 @@
+{
+  "name": "campobr-automation",
+  "private": true,
+  "type": "module",
+  "description": "Rob\u00f4 editorial do CampoBR (roda no GitHub Actions, nunca no navegador)",
+  "scripts": {
+    "publish": "node run.mjs",
+    "dry-run": "node run.mjs --dry-run"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "fast-xml-parser": "^4.5.0",
+    "firebase-admin": "^13.0.0",
+    "sharp": "^0.33.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

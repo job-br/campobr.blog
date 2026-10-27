@@ -1,0 +1,99 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin-allow-popups"
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagservices.com https://*.adtrafficquality.google https://*.google.com https://apis.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google https://api.dicebear.com; frame-src https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.firebaseapp.com https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/src/assets/images/brazil_tactical_board_coach_1792750182531.jpg",
+      "destination": "/images/brazil_tactical_board_coach_1792750182531.webp",
+      "permanent": true
+    },
+    {
+      "source": "/src/assets/images/brazilian_wonderkid_dribble_1792750181934.jpg",
+      "destination": "/images/brazilian_wonderkid_dribble_1792750181934.webp",
+      "permanent": true
+    },
+    {
+      "source": "/src/assets/images/copa_libertadores_glory_trophy_1792750184172.jpg",
+      "destination": "/images/copa_libertadores_glory_trophy_1792750184172.webp",
+      "permanent": true
+    },
+    {
+      "source": "/src/assets/images/football_performance_training_1792750183558.jpg",
+      "destination": "/images/football_performance_training_1792750183558.webp",
+      "permanent": true
+    },
+    {
+      "source": "/src/assets/images/maracana_derby_stadium_action_1792750183212.jpg",
+      "destination": "/images/maracana_derby_stadium_action_1792750183212.webp",
+      "permanent": true
+    },
+    {
+      "source": "/src/assets/images/campobr_logo_badge_1789726741750.jpg",
+      "destination": "/images/campobr_logo_badge_1789726741750.webp",
+      "permanent": true
+    },
+    {
+      "source": "/src/assets/images/campobr_stadium_bg_1789726725787.jpg",
+      "destination": "/images/campobr_stadium_bg_1789726725787.webp",
+      "permanent": true
+    }
+  ]
+}

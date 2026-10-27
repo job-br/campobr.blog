@@ -1,0 +1,8 @@
+{
+  "_comment": "Feeds RSS/Atom usados como FONTE de fatos. Edite livremente. Confirme cada URL no navegador antes de usar; feeds que falharem são ignorados e aparecem no log. Respeite os termos de uso de cada site.",
+  "maxAgeHours": 48,
+  "feeds": [
+    { "name": "ge.globo", "url": "https://ge.globo.com/rss/ge/", "category": "Clubes Serie A", "enabled": true },
+    { "name": "g1 Esporte", "url": "https://g1.globo.com/rss/g1/esportes/", "category": "Clubes Serie A", "enabled": true }
+  ]
+}

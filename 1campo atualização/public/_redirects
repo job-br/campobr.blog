@@ -1,0 +1,13 @@
+# Netlify SPA Redirects e arquivos estáticos do Google
+/ads.txt       /ads.txt       200
+/robots.txt    /robots.txt    200
+/sitemap.xml   /sitemap.xml   200
+# Caminhos legados de imagem (posts antigos no Firestore) -> WebP otimizado
+/src/assets/images/brazil_tactical_board_coach_1792750182531.jpg  /images/brazil_tactical_board_coach_1792750182531.webp  301
+/src/assets/images/brazilian_wonderkid_dribble_1792750181934.jpg  /images/brazilian_wonderkid_dribble_1792750181934.webp  301
+/src/assets/images/copa_libertadores_glory_trophy_1792750184172.jpg  /images/copa_libertadores_glory_trophy_1792750184172.webp  301
+/src/assets/images/football_performance_training_1792750183558.jpg  /images/football_performance_training_1792750183558.webp  301
+/src/assets/images/maracana_derby_stadium_action_1792750183212.jpg  /images/maracana_derby_stadium_action_1792750183212.webp  301
+/src/assets/images/campobr_logo_badge_1789726741750.jpg  /images/campobr_logo_badge_1789726741750.webp  301
+/src/assets/images/campobr_stadium_bg_1789726725787.jpg  /images/campobr_stadium_bg_1789726725787.webp  301
+/*             /index.html    200

@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ───────── Helpers ─────────
+    // Administrador = conta Google VERIFICADA com o e-mail autorizado.
+    // (Para trocar o admin, altere o e-mail abaixo e rode `firebase deploy --only firestore:rules`.)
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'canaldamenteadulta@gmail.com';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidPost(data) {
+      return data.title is string && data.title.size() >= 1 && data.title.size() <= 500
+        && data.category is string && data.category.size() <= 120
+        && data.content is string && data.content.size() <= 200000
+        && (!('summary' in data) || (data.summary is string && data.summary.size() <= 10000));
+    }
+
+    // Visitantes só podem somar +1 em views ou likes (nada além disso muda no documento)
+    function isCounterBump() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return (
+        changed.hasOnly(['viewsCount'])
+        && request.resource.data.viewsCount is int
+        && request.resource.data.viewsCount == resource.data.viewsCount + 1
+      ) || (
+        changed.hasOnly(['likesCount'])
+        && request.resource.data.likesCount is int
+        && request.resource.data.likesCount == resource.data.likesCount + 1
+      );
+    }
+
+    function isValidComment(data, postId) {
+      return data.keys().hasOnly(['id', 'postId', 'authorName', 'authorAvatar', 'content', 'createdAt', 'likes'])
+        && data.postId == postId
+        && data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 60
+        && data.content is string && data.content.size() >= 2 && data.content.size() <= 1000
+        // anti-spam básico: sem links nos comentários
+        && !data.content.matches('(?i).*(https?://|www\\.|\\.com/).*')
+        && (!('authorAvatar' in data) || (data.authorAvatar is string && data.authorAvatar.size() <= 300
+            && data.authorAvatar.matches('^https://api\\.dicebear\\.com/.*')))
+        && (!('likes' in data) || data.likes == 0);
+    }
+
+    // ───────── Posts ─────────
+    match /posts/{postId} {
+      allow get, list: if true;
+
+      allow create: if isAdmin() && isValidId(postId) && isValidPost(request.resource.data);
+      allow update: if isValidId(postId) && (
+        (isAdmin() && isValidPost(request.resource.data)) ||
+        isCounterBump()
+      );
+      allow delete: if isAdmin();
+
+      match /comments/{commentId} {
+        allow get, list: if true;
+        allow create: if isValidId(commentId) && isValidComment(request.resource.data, postId);
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // Rascunhos gerados pelo robô que não passaram no controle de qualidade (só admin)
+    match /drafts/{draftId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Estado do robô, configurações e afiliados: somente admin
+    // (o robô do servidor usa Firebase Admin SDK, que ignora estas regras)
+    match /system_state/{stateId} {
+      allow read, write: if isAdmin();
+    }
+    match /system_configs/{configId} {
+      allow read, write: if isAdmin();
+    }
+    match /settings/{settingId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Qualquer outra coleção: negado
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

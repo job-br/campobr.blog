@@ -1,0 +1,191 @@
+{
+  "entities": {
+    "Post": {
+      "title": "Post",
+      "description": "Football article published on CampoBR blog",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the post"
+        },
+        "title": {
+          "type": "string",
+          "description": "Article headline",
+          "maxLength": 200,
+          "minLength": 5
+        },
+        "slug": {
+          "type": "string",
+          "description": "URL-friendly slug for the article",
+          "maxLength": 220
+        },
+        "summary": {
+          "type": "string",
+          "description": "Short excerpt preview",
+          "maxLength": 400
+        },
+        "content": {
+          "type": "string",
+          "description": "Full body text of the article in markdown or formatted text",
+          "maxLength": 20000
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of football content",
+          "enum": [
+            "Seleção Brasileira",
+            "Clubes Serie A",
+            "Clubes Serie B",
+            "Jogadores",
+            "Equipe Técnica",
+            "Eventos"
+          ]
+        },
+        "coverImage": {
+          "type": "string",
+          "description": "URL or asset path of the cover image",
+          "maxLength": 600
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Author display name",
+          "maxLength": 100
+        },
+        "authorRole": {
+          "type": "string",
+          "description": "Role of the author",
+          "maxLength": 100
+        },
+        "authorAvatar": {
+          "type": "string",
+          "description": "Avatar URL of author",
+          "maxLength": 600
+        },
+        "viewsCount": {
+          "type": "integer",
+          "description": "Number of times this post has been viewed"
+        },
+        "likesCount": {
+          "type": "integer",
+          "description": "Number of likes received"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether this post is featured as the main highlight"
+        },
+        "readTimeMinutes": {
+          "type": "integer",
+          "description": "Estimated reading time in minutes"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Keywords and tags associated with post"
+        },
+        "publishedAt": {
+          "type": "string",
+          "description": "Publication timestamp"
+        },
+        "status": {
+          "type": "string",
+          "description": "Publication status",
+          "enum": ["published", "draft"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["title", "category", "content", "summary"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "User reader comment on an article",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of comment"
+        },
+        "postId": {
+          "type": "string",
+          "description": "Associated post ID"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Commenter name",
+          "maxLength": 80,
+          "minLength": 2
+        },
+        "authorAvatar": {
+          "type": "string",
+          "description": "Avatar URL",
+          "maxLength": 500
+        },
+        "content": {
+          "type": "string",
+          "description": "Comment text content",
+          "maxLength": 1000,
+          "minLength": 2
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when comment was submitted"
+        },
+        "likes": {
+          "type": "integer",
+          "description": "Count of helpful votes"
+        }
+      },
+      "required": ["authorName", "content", "postId"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Blog configuration and AdSense settings",
+      "type": "object",
+      "properties": {
+        "blogTitle": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "tagline": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "adsensePublisherId": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "adsenseSlotRight": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "adsenseEnabled": {
+          "type": "boolean"
+        },
+        "contactEmail": {
+          "type": "string",
+          "maxLength": 120
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Collection of all blog posts, highlights and news articles"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Sub-collection of user reader comments for a specific post"
+    },
+    "/settings/{settingId}": {
+      "schema": "SiteSettings",
+      "description": "Global portal configurations and AdSense parameters"
+    }
+  }
+}
